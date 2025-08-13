@@ -2,13 +2,21 @@
   "name": "notification_service",
   "version": "1.0.0",
   "description": "notification handler for sl trust link",
-  "main": "index.ts",
+  "main": "dist/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bull": "^4.10.4",
+    "@types/node": "^24.2.1",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@types/ioredis": "^5.0.0",
+    "bullmq": "^5.57.0"
   }
 }
