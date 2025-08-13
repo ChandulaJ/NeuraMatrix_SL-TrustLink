@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
-COPY tsconfig.json ./src ./src
+COPY ./src/ ./src/
 RUN npm run build
 
 # Stage 2: runtime
