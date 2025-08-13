@@ -1,17 +1,26 @@
-# Stage 1: build
-FROM node:20-alpine AS builder
+# Use official Node.js LTS image
+FROM node:18-alpine
+
+# Set working directory
 WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
-RUN npm ci
-COPY ./src/ ./src/
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Install TypeScript globally for build
+RUN npm install -g typescript
+
+# Copy source code
+COPY . .
+
+# Build TypeScript to JavaScript
 RUN npm run build
 
-# Stage 2: runtime
-FROM node:20-alpine
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+# Expose port (if needed for health checks)
+EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+# Start the application
+CMD ["npm", "start"]
