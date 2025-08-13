@@ -11,12 +11,6 @@ export class AppointmentService {
     data: Omit<Appointment, 'createdAt' | 'updatedAt'>
   ): Promise<Appointment> {
     try {
-      // return await this.appointmentInterface.create({
-      //     ...data,
-      //     createdAt: new Date(),
-      //     updatedAt: new Date(),
-      // });
-
       const created = await this.appointmentInterface.create({
         ...data,
         createdAt: new Date(),
@@ -27,6 +21,8 @@ export class AppointmentService {
       await publishEvent('appointment.created', {
         id: created.id,
         userId: created.userId,
+        serviceId: created.serviceId,
+        email: 'tharinduimalkajayawardhana@gmail.com',
         appointmentDate:
           created.scheduledAt instanceof Date
             ? created.scheduledAt.toISOString()

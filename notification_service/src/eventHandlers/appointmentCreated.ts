@@ -9,26 +9,45 @@ export async function handleAppointmentCreated(
   await sendImmediateNotification(evt);
 
   // 2) Schedule 24h reminder via BullMQ delayed job
-  const appointmentMs = new Date(evt.appointmentDate).getTime();
-  const reminderAtMs = appointmentMs - 24 * 60 * 60 * 1000; // -24h
-  const delay = reminderAtMs - Date.now();
+  const reminderAtMs = new Date(evt.appointmentDate).getTime();
+  if (isNaN(reminderAtMs)) {
+    console.error(
+      `[Notification] Invalid appointment date for evt=${evt.id}: ${evt.appointmentDate}`
+    );
+    return;
+  }
+  // const reminderDate = new Date(reminderAtMs - 10 * 1000);
+  const reminderDate = new Date(reminderAtMs - 24 * 60 * 60 * 1000);
+  if (isNaN(reminderDate.getTime())) {
+    console.error(
+      `[Notification] Invalid reminder date for evt=${evt.id}: ${reminderDate}`
+    );
+    return;
+  }
+  if (reminderDate < new Date()) {
+    console.warn(
+      `[Notification] Reminder date for evt=${evt.id} is in the past, skipping scheduling`
+    );
+    return;
+  }
+  // Calculate delay in milliseconds
+  const delay = reminderDate.getTime() - Date.now();
 
   if (delay > 0) {
     await reminderQueue.add(
       'send-24h-reminder',
       { evt },
       {
-        delay, // ms
+        delay: delay, // ms
         removeOnComplete: 1000,
         removeOnFail: 1000,
-        // Optional: use jobId for de-duplication (one reminder per appointment)
         jobId: `reminder:${evt.id}:24h`,
       }
     );
     console.log(
       `[Notification] Scheduled 24h reminder for appt=${evt.id} in ${Math.round(
         delay / 1000
-      )}s`
+      )}s to ${evt.email}`
     );
   } else {
     console.log(

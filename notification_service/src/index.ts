@@ -39,11 +39,16 @@ function startReminderWorker() {
     'reminders',
     async (job) => {
       const { evt } = job.data as {
-        evt: { id: number; userId: number; appointmentDate: string };
+        evt: {
+          id: number;
+          userId: number;
+          appointmentDate: string;
+          email?: string;
+        };
       };
       // TODO: swap this with your real sender (email/SMS/push)
       console.log(
-        `[Reminder] 24h: user=${evt.userId} appt=${evt.id} date=${evt.appointmentDate} (jobId=${job.id})`
+        `[Reminder] 24h: user=${evt.userId} appt=${evt.id} date=${evt.appointmentDate} (jobId=${job.id}) to ${evt.email}`
       );
     },
     { connection: { host: REDIS_HOST, port: REDIS_PORT } }
