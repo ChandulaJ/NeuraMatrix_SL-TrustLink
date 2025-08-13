@@ -78,8 +78,8 @@ const AppointmentBooking = () => {
       scheduledAt.setHours(hour24, parseInt(minutes));
 
       const appointmentData = {
-        userId: 1, // In a real app, get from auth context
-        serviceId: parseInt(serviceId),
+        userId: 1, // Hardcoded as requested since backend only supports userId = 1
+        serviceId: 1, // Hardcoded as requested since backend only supports serviceId = 1
         type: selectedType as 'IN_PERSON' | 'ONLINE',
         status: 'PENDING' as const,
         scheduledAt: scheduledAt.toISOString(),
