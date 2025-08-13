@@ -1,2 +1,14 @@
 {"level":"error","message":"Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 01:45:51"}
 {"level":"error","message":"Failed to delete appointment: Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 01:45:51"}
+{"level":"error","message":"Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:23:56"}
+{"level":"error","message":"Failed to delete appointment: Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:23:56"}
+{"level":"error","message":"Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:24:17"}
+{"level":"error","message":"Failed to delete appointment: Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:24:17"}
+{"level":"error","message":"Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:25:20"}
+{"level":"error","message":"Failed to delete appointment: Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:25:20"}
+{"level":"error","message":"Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:28:51"}
+{"level":"error","message":"Failed to delete appointment: Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:28:51"}
+{"level":"error","message":"Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:29:07"}
+{"level":"error","message":"Failed to delete appointment: Failed to delete appointment: Appointment not found","timestamp":"2025-08-13 15:29:07"}
+{"level":"error","message":"Failed to create appointment: \nInvalid `prisma.appointment.create()` invocation in\nD:\\Trustlink\\NeuraMatrix_SL-TrustLink\\server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:8:31\n\n  5 \n  6 export class PrismaAppointmentInterface implements AppointmentInterface {\n  7   async create(appointment: Appointment): Promise<Appointment> {\n→ 8     return prisma.appointment.create(\nForeign key constraint violated on the fields: (`serviceId`)","timestamp":"2025-08-13 18:33:28"}
+{"level":"error","message":"Failed to create appointment: Failed to create appointment: \nInvalid `prisma.appointment.create()` invocation in\nD:\\Trustlink\\NeuraMatrix_SL-TrustLink\\server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:8:31\n\n  5 \n  6 export class PrismaAppointmentInterface implements AppointmentInterface {\n  7   async create(appointment: Appointment): Promise<Appointment> {\n→ 8     return prisma.appointment.create(\nForeign key constraint violated on the fields: (`serviceId`)","timestamp":"2025-08-13 18:33:28"}
