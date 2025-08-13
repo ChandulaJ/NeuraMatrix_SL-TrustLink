@@ -5,7 +5,12 @@
   },
   "scripts": {
     "start": "ts-node index.ts",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "migrate": "prisma migrate dev --schema=src/prisma/schema.prisma",
+    "generate": "prisma generate --schema=src/prisma/schema.prisma"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
