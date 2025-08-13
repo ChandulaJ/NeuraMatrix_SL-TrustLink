@@ -1,0 +1,14 @@
+{
+  "name": "notification_service",
+  "version": "1.0.0",
+  "description": "notification handler for sl trust link",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
