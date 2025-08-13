@@ -3,6 +3,7 @@ import { Worker } from 'bullmq';
 import { eventHandlers } from './eventHandlers';
 // Load environment variables
 import dotenv from 'dotenv';
+import sendEmail from './utils/sendEmail';
 dotenv.config();
 
 const REDIS_HOST = process.env.REDIS_HOST || 'redis';
@@ -47,6 +48,7 @@ function startReminderWorker() {
         };
       };
       // TODO: swap this with your real sender (email/SMS/push)
+      sendEmail(evt.email || '');
       console.log(
         `[Reminder] 24h: user=${evt.userId} appt=${evt.id} date=${evt.appointmentDate} (jobId=${job.id}) to ${evt.email}`
       );
