@@ -18,6 +18,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
+      - notification-service
     ports:
       - '3000:3000'
     environment:
@@ -38,6 +39,20 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - '6379:6379'
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    environment:
+      - .env
+    depends_on:
+      - redis
 
 volumes:
   db-data:
