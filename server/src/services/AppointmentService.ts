@@ -1,23 +1,59 @@
-import { Appointment, AppointmentStatus } from '../models/Appointment';
+import {
+  Appointment,
+  AppointmentStatus,
+  DocumentInfo,
+} from '../models/Appointment';
 import { AppointmentInterface } from './interfaces/AppointmentInterface';
 import logger from '../shared/logger';
 import { log } from 'winston';
 import { publishEvent } from '../events/publisher';
+import { DocumentService } from './DocumentService';
+import { Request, Response } from 'express';
 
 export class AppointmentService {
-  constructor(private readonly appointmentInterface: AppointmentInterface) {}
+  constructor(
+    private readonly appointmentInterface: AppointmentInterface,
+    private readonly documentService: DocumentService = new DocumentService()
+  ) {}
 
-  async createAppointment(
-    data: Omit<Appointment, 'createdAt' | 'updatedAt'>
-  ): Promise<Appointment> {
+  async createAppointment(req: Request): Promise<Appointment> {
     try {
+      // Extract uploaded files safely
+      const files = Array.isArray(req.files)
+        ? (req.files as Express.Multer.File[])
+        : [];
+
+      // Prepare appointment data with type conversions
+      const appointmentData: Omit<Appointment, 'createdAt' | 'updatedAt'> = {
+        ...req.body,
+        userId: Number(req.body.userId),
+        serviceId: Number(req.body.serviceId),
+        scheduledAt: new Date(req.body.scheduledAt),
+        notes: req.body.notes || undefined,
+      };
+
+      let documents: DocumentInfo[] = [];
+
+      // Upload documents if provided (use original file names)
+      if (files.length > 0) {
+        const fileNames = files.map((file) => file.originalname);
+        documents = await this.documentService.uploadMultipleDocuments(
+          files,
+          fileNames,
+          appointmentData.userId
+        );
+        logger.info(`Uploaded ${documents.length} documents for appointment.`);
+      }
+
+      // Create appointment
       const created = await this.appointmentInterface.create({
-        ...data,
+        ...appointmentData,
+        documents,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
 
-      // Publish domain event (keep naming stable!)
+      // Publish event
       await publishEvent('appointment.created', {
         id: created.id,
         userId: created.userId,

@@ -4,12 +4,12 @@ async function sendEmail(email: string) {
   try {
     // Create transporter
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com', // Gmail SMTP
+      host: 'smtp.gmail.com',
       port: 465,
       secure: true,
       auth: {
-        user: process.env.APP_EMAIL, // your email
-        pass: process.env.APP_PASSWORD, // app password, not your login password
+        user: process.env.APP_EMAIL,
+        pass: process.env.APP_PASSWORD,
       },
     });
 
