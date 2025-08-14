@@ -42,20 +42,20 @@ const validateRegistration = [
     .isISO8601()
     .withMessage('Date of birth must be a valid date'),
   body('role')
-    .isIn(['CITIZEN', 'FOREIGNER', 'BUSINESS_OWNER', 'ADMIN'])
-    .withMessage('Role must be CITIZEN, FOREIGNER, BUSINESS_OWNER, or ADMIN'),
+    .isIn(['CITIZEN', 'FOREIGNER', 'BUSINESS_OWNER'])
+    .withMessage('Role must be CITIZEN, FOREIGNER, or BUSINESS_OWNER'),
   body('nationalId')
     .optional()
     .isLength({ min: 10, max: 12 })
     .withMessage('National ID must be between 10 and 12 characters'),
   body('passportNo')
-    .optional()
+    .if(body('role').equals('FOREIGNER'))
     .isLength({ min: 6, max: 20 })
-    .withMessage('Passport number must be between 6 and 20 characters'),
+    .withMessage('Passport number is required for FOREIGNER and must be between 6 and 20 characters'),
   body('businessRegNo')
-    .optional()
+    .if(body('role').equals('BUSINESS_OWNER'))
     .isLength({ min: 5, max: 20 })
-    .withMessage('Business registration number must be between 5 and 20 characters')
+    .withMessage('Business registration number is required for BUSINESS_OWNER and must be between 5 and 20 characters')
 ];
 
 const validateLogin = [
@@ -130,14 +130,7 @@ router.get('/profile', authenticateToken, getProfile);
 router.put('/profile', authenticateToken, validateUpdateProfile, updateProfile);
 router.post('/change-password', authenticateToken, validateChangePassword, changePassword);
 
-// Admin-only routes
-router.get('/admin/users', authenticateToken, requireRole(['ADMIN']), (req, res) => {
-  // TODO: Implement admin user management
-  res.status(200).json({
-    success: true,
-    message: 'Admin user management endpoint - to be implemented'
-  });
-});
+// Admin-only routes removed (no ADMIN role in current scope)
 
 // Health check endpoint
 router.get('/health', (req, res) => {

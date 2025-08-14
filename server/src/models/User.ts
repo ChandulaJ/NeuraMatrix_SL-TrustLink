@@ -1,8 +1,7 @@
 export enum Role {
   CITIZEN = "CITIZEN",
   FOREIGNER = "FOREIGNER",
-  BUSINESS_OWNER = "BUSINESS_OWNER",
-  ADMIN = "ADMIN"
+  BUSINESS_OWNER = "BUSINESS_OWNER"
 }
 
 export enum Gender {
