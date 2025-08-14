@@ -47,7 +47,7 @@ services:
       - '6379:6379'
 
   notification-service:
-    build: ./notification-service
+    build: ./notification_service
     container_name: notification-service
     environment:
       - .env

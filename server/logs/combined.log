@@ -40,3 +40,11 @@
 {"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 17:07:21"}
 {"level":"info","message":"Uploaded 2 documents for appointment.","timestamp":"2025-08-14 17:09:00"}
 {"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 18:58:14"}
+{"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 19:34:45"}
+{"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 19:38:13"}
+{"level":"error","message":"Failed to create appointment: \nInvalid `prisma.appointment.create()` invocation in\n/home/tharindu/projects/rootcode/NeuraMatrix_SL-TrustLink/server/src/infrastructure/database/interfaces/PrismaAppointmentInterface.ts:8:31\n\n  5 \n  6 export class PrismaAppointmentInterface implements AppointmentInterface {\n  7   async create(appointment: Appointment): Promise<Appointment> {\n→ 8     return prisma.appointment.create(\nForeign key constraint violated on the fields: (`userId`)","timestamp":"2025-08-14 19:38:13"}
+{"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 19:40:18"}
+{"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 19:44:41"}
+{"level":"error","message":"Failed to create appointment: \nInvalid `prisma.appointment.create()` invocation in\n/home/tharindu/projects/rootcode/NeuraMatrix_SL-TrustLink/server/src/infrastructure/database/interfaces/PrismaAppointmentInterface.ts:8:31\n\n  5 \n  6 export class PrismaAppointmentInterface implements AppointmentInterface {\n  7   async create(appointment: Appointment): Promise<Appointment> {\n→ 8     return prisma.appointment.create(\nForeign key constraint violated on the fields: (`userId`)","timestamp":"2025-08-14 19:44:41"}
+{"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 19:44:47"}
+{"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-14 19:45:04"}
