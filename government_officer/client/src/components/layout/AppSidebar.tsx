@@ -25,7 +25,7 @@ import {
 
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Ready for Review", url: "/ready-for-review", icon: Clock },
+
   { title: "All Applications", url: "/applications", icon: Users },
   { title: "Integrity Flags", url: "/integrity-flags", icon: AlertTriangle },
   { title: "Reports", url: "/reports", icon: FileText },

@@ -12,7 +12,6 @@ import { ApplicationDetail } from "./pages/ApplicationDetail";
 import { Reports } from "./pages/Reports";
 import { IntegrityFlags } from "./pages/IntegrityFlags";
 import { Notifications } from "./pages/Notifications";
-import { ReadyForReview } from "./pages/ReadyForReview";
 import { Profile } from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -56,7 +55,6 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/ready-for-review" element={<ReadyForReview />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/application/:id" element={<ApplicationDetail />} />
               <Route path="/integrity-flags" element={<IntegrityFlags />} />
