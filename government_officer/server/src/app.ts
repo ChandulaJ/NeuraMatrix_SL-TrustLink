@@ -16,7 +16,26 @@ import { openapiSpec } from './docs/openapi.js';
 export const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
+app.use(cors({
+	origin: (origin, callback) => {
+		console.log('CORS request from origin:', origin);
+		if (!origin) return callback(null, true);
+		const normalize = (url: string) => url.replace(/\/$/, '').trim().toLowerCase();
+		const allowed = env.CORS_ORIGIN.split(',').map(normalize);
+		const incoming = normalize(origin);
+		if (allowed.includes(incoming)) {
+			return callback(null, true);
+		}
+		// Also allow if only protocol differs (e.g., http vs https in dev)
+		const incomingNoProto = incoming.replace(/^https?:\/\//, '');
+		if (allowed.some(a => a.replace(/^https?:\/\//, '') === incomingNoProto)) {
+			return callback(null, true);
+		}
+		console.error('Not allowed by CORS:', origin);
+		return callback(new Error('Not allowed by CORS'));
+	},
+	credentials: true
+}));
 app.use(express.json({ limit: '2mb' }));
 app.use(morgan('dev'));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, { explorer: true }));

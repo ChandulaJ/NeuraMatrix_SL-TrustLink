@@ -1,7 +1,7 @@
 // All API endpoint definitions for the client
 // Update these constants if server endpoints change
 
-export const API_BASE_URL = '/api';
+export const API_BASE_URL = 'http://localhost:4000';
 
 // Auth
 export const API_AUTH_REGISTER = `${API_BASE_URL}/auth/register`;
