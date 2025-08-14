@@ -9,6 +9,7 @@ import { log } from 'winston';
 import { publishEvent } from '../events/publisher';
 import { DocumentService } from './DocumentService';
 import { Request, Response } from 'express';
+import { sseManager } from '../controllers/SSEController';
 
 export class AppointmentService {
   constructor(
@@ -51,6 +52,22 @@ export class AppointmentService {
         documents,
         createdAt: new Date(),
         updatedAt: new Date(),
+      });
+
+      sseManager.broadcast('appointment.created', {
+        appointment: {
+          id: created.id,
+          userId: created.userId,
+          serviceId: created.serviceId,
+          type: created.type,
+          status: created.status,
+          scheduledAt: created.scheduledAt,
+          notes: created.notes,
+          documents: created.documents,
+          createdAt: created.createdAt,
+        },
+        timestamp: new Date().toISOString(),
+        message: 'New appointment created',
       });
 
       // Publish event
