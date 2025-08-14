@@ -47,7 +47,6 @@ function startReminderWorker() {
           email?: string;
         };
       };
-      // TODO: swap this with your real sender (email/SMS/push)
       sendEmail(evt.email || '');
       console.log(
         `[Reminder] 24h: user=${evt.userId} appt=${evt.id} date=${evt.appointmentDate} (jobId=${job.id}) to ${evt.email}`

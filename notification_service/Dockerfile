@@ -4,22 +4,22 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (for caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies including devDependencies
+RUN npm ci
 
-# Install TypeScript globally for build
-RUN npm install -g typescript
+# Install TypeScript globally (optional, but not required if using local tsc)
+# RUN npm install -g typescript
 
-# Copy source code
+# Copy the rest of the source code
 COPY . .
 
 # Build TypeScript to JavaScript
 RUN npm run build
 
-# Expose port (if needed for health checks)
+# Expose the port your service runs on
 EXPOSE 3000
 
 # Start the application
