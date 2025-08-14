@@ -10,6 +10,8 @@ import reportRoutes from './routes/report.routes.js';
 import flagRoutes from './routes/flag.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import { errorHandler } from './middlewares/error.js';
+import swaggerUi from 'swagger-ui-express';
+import { openapiSpec } from './docs/openapi.js';
 
 export const app = express();
 
@@ -17,6 +19,8 @@ app.use(helmet());
 app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '2mb' }));
 app.use(morgan('dev'));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, { explorer: true }));
+app.get('/docs.json', (_req, res) => res.json(openapiSpec));
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
