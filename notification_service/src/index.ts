@@ -47,7 +47,7 @@ function startReminderWorker() {
           email?: string;
         };
       };
-      sendEmail(evt.email || '');
+      sendEmail(evt.email || '', 'reminder');
       console.log(
         `[Reminder] 24h: user=${evt.userId} appt=${evt.id} date=${evt.appointmentDate} (jobId=${job.id}) to ${evt.email}`
       );

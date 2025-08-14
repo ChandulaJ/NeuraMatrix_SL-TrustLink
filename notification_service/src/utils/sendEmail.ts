@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-async function sendEmail(email: string) {
+async function sendEmail(email: string, type: string = 'immediate') {
   try {
     // Create transporter
     const transporter = nodemailer.createTransport({
@@ -14,13 +14,24 @@ async function sendEmail(email: string) {
     });
 
     // Email details
-    const mailOptions = {
-      from: '"Your Name" <your-email-address>',
-      to: email,
-      subject: 'Hello from Nodemailer (TS)',
-      text: 'This is a test email sent using Nodemailer and TypeScript.',
-      html: '<b>This is a test email sent using Nodemailer and TypeScript.</b>',
-    };
+    let mailOptions;
+    if (type === 'immediate') {
+      mailOptions = {
+        from: '"Your Name" <your-email-address>',
+        to: email,
+        subject: 'Hello from Nodemailer (TS) - immediate',
+        text: 'This is a test email sent using Nodemailer and TypeScript - immediate.',
+        html: '<b>This is a test email sent using Nodemailer and TypeScript - immediate.</b>',
+      };
+    } else {
+      mailOptions = {
+        from: '"Your Name" <your-email-address>',
+        to: email,
+        subject: 'Hello from Nodemailer (TS) - reminder',
+        text: 'This is a test email sent using Nodemailer and TypeScript - reminder.',
+        html: '<b>This is a test email sent using Nodemailer and TypeScript - reminder.</b>',
+      };
+    }
 
     // Send email
     const info = await transporter.sendMail(mailOptions);
