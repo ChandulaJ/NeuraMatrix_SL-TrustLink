@@ -135,4 +135,63 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "title":
+  "title": "Review meeting",
+  "start": "2025-08-20T10:00:00.000Z",
+  "end":   "2025-08-20T11:00:00.000Z"
+}
+
+###
+# Delete the busy block we just created
+@createdBusyId = {{create_busy.response.body.$.id}}
+DELETE {{base}}/admin-schedule/{{createdBusyId}}
+Authorization: Bearer {{adminToken}}
+
+############################################################
+# Integrity Flags
+############################################################
+
+### List all flags
+# @name flags_list
+GET {{base}}/integrity-flags
+Authorization: Bearer {{adminToken}}
+
+###
+# Resolve the first flag from the list
+@firstFlagId = {{flags_list.response.body.$.[0].id}}
+POST {{base}}/integrity-flags/{{firstFlagId}}/resolve
+Authorization: Bearer {{adminToken}}
+
+############################################################
+# Reports / Dashboard
+############################################################
+
+### Summary metrics (cards on dashboard)
+GET {{base}}/reports/summary
+Authorization: Bearer {{adminToken}}
+
+### Approvals vs Rejections (last 30d)
+GET {{base}}/reports/approvals-vs-rejections
+Authorization: Bearer {{adminToken}}
+
+### Auditor performance
+GET {{base}}/reports/auditor-performance
+Authorization: Bearer {{adminToken}}
+
+### Status breakdown donut
+GET {{base}}/reports/status-breakdown
+Authorization: Bearer {{adminToken}}
+
+############################################################
+# Notifications
+############################################################
+
+### My notifications (admin)
+# @name my_notifications
+GET {{base}}/notifications?unreadOnly=1
+Authorization: Bearer {{adminToken}}
+
+###
+# Mark first notification as read
+@firstNotifId = {{my_notifications.response.body.$.[0].id}}
+POST {{base}}/notifications/{{firstNotifId}}/read
+Authorization: Bearer {{adminToken}}
