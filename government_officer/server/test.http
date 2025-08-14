@@ -1,0 +1,197 @@
+@base = http://localhost:4000
+
+### Health
+GET {{base}}/health
+
+###
+# Admin login (seeded user)
+# @name admin_login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "rohan",
+  "password": "admin123"
+}
+
+###
+# Auditor login (seeded user)
+# @name auditor_login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "sanjeewa",
+  "password": "auditor123"
+}
+
+###
+# Capture tokens from previous responses
+@adminToken = {{admin_login.response.body.$.accessToken}}
+@auditorToken = {{auditor_login.response.body.$.accessToken}}
+
+############################################################
+# Applications
+############################################################
+
+### List applications (all)
+# @name applications_list
+GET {{base}}/applications?page=1&pageSize=20
+Authorization: Bearer {{adminToken}}
+
+###
+# Quick filters: pending
+GET {{base}}/applications?status=PENDING
+Authorization: Bearer {{adminToken}}
+
+###
+# Capture first application id from list for convenience
+@firstAppId = {{applications_list.response.body.$.items[0].id}}
+
+### Application detail (includes overlap summary if scheduledAt present)
+GET {{base}}/applications/{{firstAppId}}
+Authorization: Bearer {{adminToken}}
+
+###
+# Accept appointment for the first application (no force)
+# Change scheduledFor if needed
+POST {{base}}/applications/{{firstAppId}}/appointment/accept
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "scheduledFor": "2025-08-20T10:30:00.000Z"
+}
+
+###
+# Accept appointment but allow conflict (force = true)
+POST {{base}}/applications/{{firstAppId}}/appointment/accept
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "scheduledFor": "2025-08-20T10:30:00.000Z",
+  "force": true
+}
+
+###
+# Approve application and (optionally) accept appointment in the same call
+POST {{base}}/applications/{{firstAppId}}/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "appointment": {
+    "scheduledFor": "2025-08-20T10:30:00.000Z",
+    "force": true
+  }
+}
+
+###
+# Reject application with reason (use another ID if needed)
+POST {{base}}/applications/3/reject
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "reason": "Incomplete documents"
+}
+
+############################################################
+# Audit Report (Auditor role)
+############################################################
+
+### Create/Update audit report for an application
+POST {{base}}/applications/2/audit-report
+Authorization: Bearer {{auditorToken}}
+Content-Type: application/json
+
+{
+  "date": "2025-08-18T09:00:00.000Z",
+  "result": "PASSED",
+  "notes": "All safety measures verified.",
+  "photoEvidenceUrl": "https://example.com/photo1.jpg",
+  "checklist": {
+    "fireSafety": true,
+    "hygiene": true,
+    "emergencyExits": true
+  }
+}
+
+############################################################
+# Admin Schedule (busy blocks)
+############################################################
+
+### List my schedule
+# @name my_schedule
+GET {{base}}/admin-schedule/my
+Authorization: Bearer {{adminToken}}
+
+###
+# Create a busy block (will likely create an overlap with 2025-08-20 10:30)
+# @name create_busy
+POST {{base}}/admin-schedule
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Review meeting",
+  "start": "2025-08-20T10:00:00.000Z",
+  "end":   "2025-08-20T11:00:00.000Z"
+}
+
+###
+# Delete the busy block we just created
+@createdBusyId = {{create_busy.response.body.$.id}}
+DELETE {{base}}/admin-schedule/{{createdBusyId}}
+Authorization: Bearer {{adminToken}}
+
+############################################################
+# Integrity Flags
+############################################################
+
+### List all flags
+# @name flags_list
+GET {{base}}/integrity-flags
+Authorization: Bearer {{adminToken}}
+
+###
+# Resolve the first flag from the list
+@firstFlagId = {{flags_list.response.body.$.[0].id}}
+POST {{base}}/integrity-flags/{{firstFlagId}}/resolve
+Authorization: Bearer {{adminToken}}
+
+############################################################
+# Reports / Dashboard
+############################################################
+
+### Summary metrics (cards on dashboard)
+GET {{base}}/reports/summary
+Authorization: Bearer {{adminToken}}
+
+### Approvals vs Rejections (last 30d)
+GET {{base}}/reports/approvals-vs-rejections
+Authorization: Bearer {{adminToken}}
+
+### Auditor performance
+GET {{base}}/reports/auditor-performance
+Authorization: Bearer {{adminToken}}
+
+### Status breakdown donut
+GET {{base}}/reports/status-breakdown
+Authorization: Bearer {{adminToken}}
+
+############################################################
+# Notifications
+############################################################
+
+### My notifications (admin)
+# @name my_notifications
+GET {{base}}/notifications?unreadOnly=1
+Authorization: Bearer {{adminToken}}
+
+###
+# Mark first notification as read
+@firstNotifId = {{my_notifications.response.body.$.[0].id}}
+POST {{base}}/notifications/{{firstNotifId}}/read
+Authorization: Bearer {{adminToken}}
