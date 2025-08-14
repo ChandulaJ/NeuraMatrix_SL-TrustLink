@@ -1,7 +1,7 @@
-import * as express from 'express';
+import express from 'express';
 import helmet from 'helmet';
-import * as cors from 'cors';
-import * as morgan from 'morgan';
+import cors from 'cors';
+import morgan from 'morgan';
 import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
 import applicationRoutes from './routes/application.routes.js';
