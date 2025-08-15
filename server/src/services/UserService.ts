@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { PrismaUserInterface } from '../infrastructure/database/interfaces/PrismaUserInterface';
 import { UserInterface, CreateUserData, LoginData, PasswordResetData, ResetPasswordData, ChangePasswordData, UpdateProfileData, UserResponse } from './interfaces/UserInterface';
-import { generateToken } from '../middleware/auth';
+import { generateToken } from '../middleware/UserAuth';
 import { Role, Gender, User } from '../models/User';
 
 export class UserService implements UserInterface {

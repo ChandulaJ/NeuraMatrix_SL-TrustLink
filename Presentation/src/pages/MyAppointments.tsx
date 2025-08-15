@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { appointmentApi, type Appointment } from "@/services/appointmentApi";
 import { QRCodeDisplay } from "@/components/QRCodeDisplay";
 import { useToast } from "@/hooks/use-toast";
+import { authApi } from "@/services/authApi";
 
 const MyAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -23,7 +24,17 @@ const MyAppointments = () => {
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
-      const userAppointments = await appointmentApi.getUserAppointments(1); // In real app, get from auth
+      const userData = await authApi.getUserByEmail(JSON.parse(localStorage.getItem('email') || '""'));
+      if (!userData) {
+        toast({
+          title: "Error",
+          description: "User not found. Please log in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const userAppointments = await appointmentApi.getUserAppointments(userData.id); // In real app, get from auth
       setAppointments(userAppointments);
     } catch (error) {
       toast({

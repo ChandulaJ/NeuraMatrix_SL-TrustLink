@@ -42,6 +42,9 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Registration failed');
+      localStorage.setItem('email', JSON.stringify(data.data.user.email));
+      localStorage.setItem('token', JSON.stringify(data.token));
+      localStorage.setItem('role', JSON.stringify(data.data.user.role));
       return data;
     } catch (error) {
       toast.error(error.message);
@@ -59,6 +62,10 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Login failed');
+      //update tocken local storage
+      localStorage.setItem('token', JSON.stringify(data.token));
+      localStorage.setItem('email', JSON.stringify(data.data.user.email));
+      localStorage.setItem('role', JSON.stringify(data.data.user.role));
       return data;
     } catch (error) {
       console.error('Login error:', error);
@@ -78,6 +85,20 @@ export const authApi = {
     } catch (error) {
       console.error('Profile loading error:', error);
       throw new Error('Failed to load profile');
+    }
+  },
+
+  getUserByEmail: async (email: string) => {
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/users/profile/${email}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to load user by email');
+      console.log('User by email loaded:', data.data.user);
+      return data.data.user;
+    } catch (error) {
+      console.error('User by email loading error:', error);
+      throw new Error('Failed to load user by email');
     }
   },
 

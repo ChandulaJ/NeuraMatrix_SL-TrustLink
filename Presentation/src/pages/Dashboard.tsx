@@ -7,17 +7,21 @@ import { Calendar, Clock, QrCode, FileText, CheckCircle, AlertCircle } from "luc
 import { getAllServices } from "@/services/servicesApi";
 import {appointmentApi} from "@/services/appointmentApi";
 import { useToast } from "@/components/ui/use-toast";
+import { authApi } from "@/services/authApi";
 
 
 const Dashboard = () => {
-  const [userName] = useState("John Doe");
+  const [userData, setUserData] = useState<any>(null);
   const [recentServices, setRecentServices] = useState<any>(null);
   const [bookedAppointments, setBookedAppointments] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
+
       const fetchService = async () => {
         try {
+          const userData = await authApi.getUserByEmail(JSON.parse(localStorage.getItem('email') || '""'));
+          setUserData(userData);
           const serviceData = await getAllServices();
           const bookingData = await appointmentApi.getUserAppointments(1);
           setRecentServices(serviceData);
@@ -89,7 +93,7 @@ const Dashboard = () => {
       <div className="space-y-6">
         {/* Welcome Section */}
         <div className="bg-gradient-primary rounded-lg p-6 text-primary-foreground">
-          <h1 className="text-3xl font-heading font-bold mb-2">Welcome back, {userName}!</h1>
+          <h1 className="text-3xl font-heading font-bold mb-2">Welcome back, {userData.firstName}!</h1>
           <p className="text-primary-foreground/90">Manage your government services and appointments</p>
         </div>
 

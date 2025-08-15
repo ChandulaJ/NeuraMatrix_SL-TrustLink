@@ -13,6 +13,7 @@ import { ArrowLeft, Clock, Calendar as CalendarIcon, MapPin, CheckCircle, QrCode
 import { useToast } from "@/hooks/use-toast";
 import { appointmentApi } from "@/services/appointmentApi";
 import { getServiceById } from "@/services/servicesApi";
+import { authApi } from "@/services/authApi";
 
 const AppointmentBooking = () => {
   const { serviceId } = useParams();
@@ -85,8 +86,17 @@ const AppointmentBooking = () => {
       
       scheduledAt.setHours(hour24, parseInt(minutes));
       const referenceNumber = `APP-${service.id}-${Date.now().toString().slice(-6)}`;
+      const userData = await authApi.getUserByEmail(JSON.parse(localStorage.getItem('email') || '""'));
+            if (!userData) {
+              toast({
+                title: "Error",
+                description: "User not found. Please log in again.",
+                variant: "destructive",
+              });
+              return;
+            }
       const appointmentData = {
-        userId: 1, // Hardcoded as requested since backend only supports userId = 1
+        userId: userData.id, // Hardcoded as requested since backend only supports userId = 1
         serviceId: service.id, // Hardcoded as requested since backend only supports serviceId = 1
         type: selectedType as 'IN_PERSON' | 'ONLINE',
         status: 'PENDING' as const,
