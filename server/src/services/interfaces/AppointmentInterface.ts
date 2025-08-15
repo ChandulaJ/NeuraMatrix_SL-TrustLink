@@ -6,4 +6,6 @@ export interface AppointmentInterface {
   update(appointment: Appointment): Promise<Appointment>;
   delete(id: number): Promise<void>;
   findByUser(userId: number): Promise<Appointment[]>;
+  findLatest(): Promise<Appointment | null>;
+  
 }

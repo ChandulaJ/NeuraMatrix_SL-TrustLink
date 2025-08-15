@@ -8,6 +8,9 @@ export class AppointmentService {
 
     async createAppointment(data: Omit<Appointment, "createdAt" | "updatedAt">): Promise<Appointment> {
         try {
+            // create a new reference after the recent reference in the format of department code and then number
+            //const latestAppointment = await this.appointmentInterface.findLatest();
+            //const newReference = await this.generateReference(latestAppointment);
             return await this.appointmentInterface.create({
                 ...data,
                 createdAt: new Date(),
@@ -56,5 +59,12 @@ export class AppointmentService {
             logger.error(`Failed to delete appointment: ${(error as Error).message}`);
             throw new Error(`Failed to delete appointment: ${(error as Error).message}`);
         }
+    }
+
+    async generateReference(latestAppointment: Appointment | null): Promise<string> {
+        const departmentCode = latestAppointment?.service?.department?.code || "DEPT";
+        const latestNumber = latestAppointment ? parseInt(latestAppointment.reference.split("-")[1]) : 0;
+        const newNumber = latestNumber + 1;
+        return `${departmentCode}-${newNumber}`;
     }
 }

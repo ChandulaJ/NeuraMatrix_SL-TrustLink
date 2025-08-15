@@ -1,3 +1,5 @@
+import { Service } from "./Service";
+import { User } from "./User";
 
 export interface Appointment {
   id: number;
@@ -7,8 +9,12 @@ export interface Appointment {
   status: AppointmentStatus;
   scheduledAt: Date;
   notes?: string;
+  reference: string;
   createdAt: Date;
   updatedAt: Date;
+
+  service?: Service; 
+  user?: User;
 }
 
 

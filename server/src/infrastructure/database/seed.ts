@@ -146,6 +146,7 @@ export async function seedDummyDepartmentsAndServices() {
           name: dept.name,
           code: dept.code,
           description: dept.description,
+          location: dept.location,
         },
       });
       console.log(`Department ${dept.name} created`);
@@ -172,6 +173,7 @@ export async function seedDummyDepartmentsAndServices() {
             requirements: svc.requirements.length > 0 ? svc.requirements : null,
             category: svc.category,
             departmentId: department.id,
+            status: "available",
           },
         });
         console.log(`Service '${svc.name}' created for ${dept.name}`);
