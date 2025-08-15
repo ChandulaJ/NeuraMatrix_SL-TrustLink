@@ -1,15 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import {
-  register,
-  login,
-  logout,
-  forgotPassword,
-  resetPassword,
-  changePassword,
-  getProfile,
-  updateProfile
-} from "../controllers/authController";
+import { UserController } from '../controllers/UserController';
 import { authenticateToken, requireRole } from '../middleware/auth';
 
 const router = Router();
@@ -28,6 +19,9 @@ const validateRegistration = [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email address'),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long'),
   body('phoneNumber')
     .optional(),
   body('gender')
@@ -79,7 +73,6 @@ const validateResetPassword = [
   body('newPassword')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character')
 ];
 
 const validateChangePassword = [
@@ -89,7 +82,6 @@ const validateChangePassword = [
   body('newPassword')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character')
 ];
 
 const validateUpdateProfile = [
@@ -116,24 +108,28 @@ const validateUpdateProfile = [
 ];
 
 // Public routes
-router.post('/register', validateRegistration, register);
-router.post('/login', validateLogin, login);
-router.post('/logout', logout);
-router.post('/forgot-password', validateForgotPassword, forgotPassword);
-router.post('/reset-password', validateResetPassword, resetPassword);
+router.post('/register', validateRegistration, UserController.register);
+router.post('/login', validateLogin, UserController.login);
+router.post('/logout', UserController.logout);
+router.post('/forgot-password', validateForgotPassword, UserController.forgotPassword);
+router.post('/reset-password', validateResetPassword, UserController.resetPassword);
+router.get('/verify-email/:token', UserController.verifyEmail);
 
 // Protected routes (require authentication)
-router.get('/profile', authenticateToken, getProfile);
-router.put('/profile', authenticateToken, validateUpdateProfile, updateProfile);
-router.post('/change-password', authenticateToken, validateChangePassword, changePassword);
+router.get('/profile', authenticateToken, UserController.getProfile);
+router.put('/profile', authenticateToken, validateUpdateProfile, UserController.updateProfile);
+router.post('/change-password', authenticateToken, validateChangePassword, UserController.changePassword);
 
-// Admin-only routes removed (no ADMIN role in current scope)
+// Admin-only routes
+router.get('/:id', authenticateToken, requireRole(['ADMIN']), UserController.getUserById);
+router.put('/:id', authenticateToken, requireRole(['ADMIN']), validateUpdateProfile, UserController.updateUser);
+router.delete('/:id', authenticateToken, requireRole(['ADMIN']), UserController.deleteUser);
 
 // Health check endpoint
 router.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Authentication service is running',
+    message: 'User service is running',
     timestamp: new Date().toISOString()
   });
 });
