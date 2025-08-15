@@ -10,15 +10,15 @@ export class DepartmentService {
         return await this.departmentInterface.createDepartment(data);
     }
 
-    async getDepartmentById(id: string): Promise<Department | null> {
+    async getDepartmentById(id: number): Promise<Department | null> {
         return await this.departmentInterface.getDepartmentById(id);
     }
 
-    async updateDepartment(id: string, data: Partial<Department>): Promise<Department | null> {
+    async updateDepartment(id: number, data: Partial<Department>): Promise<Department | null> {
         return await this.departmentInterface.updateDepartment(id, data);
     }
 
-    async deleteDepartment(id: string): Promise<boolean> {
+    async deleteDepartment(id: number): Promise<boolean> {
         return await this.departmentInterface.deleteDepartment(id);
     }
 

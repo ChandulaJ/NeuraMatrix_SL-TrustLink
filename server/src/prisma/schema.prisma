@@ -33,10 +33,12 @@ model User {
 
 model Department {
   id          Int       @id @default(autoincrement())
+  icon        String?
   name        String
   code        String    @unique
   description String
   services    Service[]
+  location    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

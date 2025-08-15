@@ -18,7 +18,7 @@ export class ServicesController {
 
     static async getServiceById(req: Request, res: Response): Promise<void> {
         try {
-            const service = await servicesService.getServiceById(req.params.id);
+            const service = await servicesService.getServiceById(Number(req.params.id));
             if (service) {
                 res.status(200).json(service);
             } else {
@@ -32,7 +32,7 @@ export class ServicesController {
 
     static async updateService(req: Request, res: Response): Promise<void> {
         try {
-            const updatedService = await servicesService.updateService(req.params.id, req.body);
+            const updatedService = await servicesService.updateService(Number(req.params.id), req.body);
             if (updatedService) {
                 res.status(200).json(updatedService);
             } else {
@@ -46,7 +46,7 @@ export class ServicesController {
 
     static async deleteService(req: Request, res: Response): Promise<void> {
         try {
-            const deleted = await servicesService.deleteService(req.params.id);
+            const deleted = await servicesService.deleteService(Number(req.params.id));
             if (deleted) {
                 res.status(204).send();
             } else {

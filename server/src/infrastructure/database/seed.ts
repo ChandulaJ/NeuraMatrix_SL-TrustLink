@@ -32,6 +32,7 @@ export async function seedDummyDepartmentsAndServices() {
       name: "Sri Lankan Tourist Department",
       code: "TD",
       description: "Responsible for country tourism services",
+      location: "Tourist Information Center, Colombo",
       services: [
         {
           name: "Tourist Visa Issuance",
@@ -66,6 +67,7 @@ export async function seedDummyDepartmentsAndServices() {
       name: "People Registration Department",
       code: "PRD",
       description: "Handles registration of national identities and vital events",
+      location: "People Registration Office, Colombo 7",
       services: [
         {
           name: "National Identity Card Issuance",
@@ -100,6 +102,7 @@ export async function seedDummyDepartmentsAndServices() {
       name: "Labour Department",
       code: "LD",
       description: "Oversees labour regulation and employment services",
+      location: "Labour Department Office, Colombo 5",
       services: [
         {
           name: "Work Permit Issuance",

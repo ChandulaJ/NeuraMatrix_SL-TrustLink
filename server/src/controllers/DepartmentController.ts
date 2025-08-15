@@ -18,7 +18,7 @@ export class DepartmentController {
 
   static async getDepartmentById(req: Request, res: Response): Promise<void> {
     try {
-      const department = await departmentService.getDepartmentById(req.params.id);
+      const department = await departmentService.getDepartmentById(Number(req.params.id));
       if (department) {
         res.status(200).json(department);
       } else {
@@ -32,7 +32,7 @@ export class DepartmentController {
 
   static async updateDepartment(req: Request, res: Response): Promise<void> {
     try {
-      const updatedDepartment = await departmentService.updateDepartment(req.params.id, req.body);
+      const updatedDepartment = await departmentService.updateDepartment(Number(req.params.id), req.body);
       if (updatedDepartment) {
         res.status(200).json(updatedDepartment);
       } else {
@@ -46,7 +46,7 @@ export class DepartmentController {
 
   static async deleteDepartment(req: Request, res: Response): Promise<void> {
     try {
-      const deleted = await departmentService.deleteDepartment(req.params.id);
+      const deleted = await departmentService.deleteDepartment(Number(req.params.id));
       if (deleted) {
         res.status(204).send();
       } else {

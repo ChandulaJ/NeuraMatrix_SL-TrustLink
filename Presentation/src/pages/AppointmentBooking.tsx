@@ -149,7 +149,7 @@ const AppointmentBooking = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span>Service Fee</span>
-                  <span className="font-semibold">{service.price}</span>
+                  <span className="font-semibold">USD:{service.price}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4" />

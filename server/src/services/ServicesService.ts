@@ -8,15 +8,15 @@ export class ServicesService {
         return await this.serviceInterface.createService(data);
     }
 
-    async getServiceById(id: string): Promise<Service | null> {
+    async getServiceById(id: number): Promise<Service | null> {
         return await this.serviceInterface.getServiceById(id);
     }
 
-    async updateService(id: string, data: Partial<Service>): Promise<Service | null> {
+    async updateService(id: number, data: Partial<Service>): Promise<Service | null> {
         return await this.serviceInterface.updateService(id, data);
     }
 
-    async deleteService(id: string): Promise<boolean> {
+    async deleteService(id: number): Promise<boolean> {
         return await this.serviceInterface.deleteService(id);
     }
 
