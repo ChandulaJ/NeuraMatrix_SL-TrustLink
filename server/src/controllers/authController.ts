@@ -141,7 +141,12 @@ export const login = async (req: Request, res: Response) => {
 
     // Email verification is optional - users can login immediately after registration
 
-    // Verify password
+    if (!user.password) {
+      return res.status(500).json({
+        success: false,
+        message: "User does not have a password set."
+      });
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -365,7 +370,12 @@ export const changePassword = async (req: Request, res: Response) => {
       });
     }
 
-    // Verify current password
+    if (!user.password) {
+      return res.status(500).json({
+        success: false,
+        message: "User does not have a password set."
+      });
+    }
     const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
     if (!isCurrentPasswordValid) {
       return res.status(400).json({

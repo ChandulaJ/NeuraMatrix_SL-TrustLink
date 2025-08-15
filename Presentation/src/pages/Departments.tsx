@@ -4,95 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Building2, Users, Clock, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Departments = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const departments = [
-    {
-      id: 1,
-      name: "Immigration Department",
-      code: "IMM",
-      description: "Passport services, visa applications, and immigration matters",
-      servicesCount: 12,
-      avgWaitTime: "45 mins",
-      icon: "🛂",
-      popular: true
-    },
-    {
-      id: 2,
-      name: "Motor Traffic Department",
-      code: "MTD",
-      description: "Driving licenses, vehicle registration, and traffic permits",
-      servicesCount: 18,
-      avgWaitTime: "30 mins",
-      icon: "🚗",
-      popular: true
-    },
-    {
-      id: 3,
-      name: "Police Department",
-      code: "POL",
-      description: "Character certificates, police reports, and clearances",
-      servicesCount: 8,
-      avgWaitTime: "25 mins",
-      icon: "👮",
-      popular: false
-    },
-    {
-      id: 4,
-      name: "Wildlife Department",
-      code: "WLD",
-      description: "Wildlife permits, conservation licenses, and environmental clearances",
-      servicesCount: 6,
-      avgWaitTime: "60 mins",
-      icon: "🦋",
-      popular: false
-    },
-    {
-      id: 5,
-      name: "Registrar General",
-      code: "REG",
-      description: "Birth certificates, marriage certificates, and vital records",
-      servicesCount: 15,
-      avgWaitTime: "20 mins",
-      icon: "📋",
-      popular: true
-    },
-    {
-      id: 6,
-      name: "Trade Department",
-      code: "TRD",
-      description: "Business licenses, trade permits, and commercial registrations",
-      servicesCount: 10,
-      avgWaitTime: "35 mins",
-      icon: "🏢",
-      popular: false
-    },
-    {
-      id: 7,
-      name: "Health Department",
-      code: "HTH",
-      description: "Health certificates, medical licenses, and sanitary permits",
-      servicesCount: 9,
-      avgWaitTime: "40 mins",
-      icon: "🏥",
-      popular: false
-    },
-    {
-      id: 8,
-      name: "Education Department",
-      code: "EDU",
-      description: "School certificates, educational verifications, and academic documents",
-      servicesCount: 7,
-      avgWaitTime: "30 mins",
-      icon: "🎓",
-      popular: false
-    }
-  ];
+  // call axios and get from backend
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const response = await fetch('http://localhost:3000/departments');
+      const data = await response.json();
+      setDepartments(data);
+    };
+    fetchDepartments();
+  }, []);
 
   const filteredDepartments = departments.filter(dept =>
     dept.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

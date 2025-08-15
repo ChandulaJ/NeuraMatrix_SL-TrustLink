@@ -9,7 +9,7 @@ import {
   changePassword,
   getProfile,
   updateProfile
-} from '../controllers/authController';
+} from "../controllers/authController";
 import { authenticateToken, requireRole } from '../middleware/auth';
 
 const router = Router();
@@ -28,9 +28,6 @@ const validateRegistration = [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email address'),
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long'),
   body('phoneNumber')
     .optional(),
   body('gender')
