@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 const API_BASE_URL = 'http://localhost:3000';
 
 export type Role = 'CITIZEN' | 'FOREIGNER' | 'BUSINESS_OWNER';
@@ -14,6 +16,11 @@ export interface RegisterRequest {
   nationalId?: string;
   passportNo?: string;
   businessRegNo?: string;
+  isEmailVerified?: boolean;
+  emailVerificationToken?: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  lastLoginAt?: Date;
 }
 
 export interface AuthResponse {
@@ -28,7 +35,7 @@ export interface AuthResponse {
 export const authApi = {
   register: async (payload: RegisterRequest): Promise<AuthResponse> => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      const res = await fetch(`${API_BASE_URL}/user/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -37,6 +44,7 @@ export const authApi = {
       if (!res.ok) throw new Error(data.message || 'Registration failed');
       return data;
     } catch (error) {
+      toast.error(error.message);
       console.error('Registration error:', error);
       throw new Error('Registration failed');
     }
@@ -44,7 +52,7 @@ export const authApi = {
 
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -61,7 +69,7 @@ export const authApi = {
 
   getProfile: async (token: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/profile`, {
+      const res = await fetch(`${API_BASE_URL}/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -75,7 +83,7 @@ export const authApi = {
 
   updateProfile: async (token: string, updates: any) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/profile`, {
+      const res = await fetch(`${API_BASE_URL}/user/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(updates),

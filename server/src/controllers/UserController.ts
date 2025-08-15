@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { UserService } from '../services/UserService';
+import { PrismaUserInterface } from '../infrastructure/database/interfaces/PrismaUserInterface';
+import logger from '../shared/logger';
+
 
 export class UserController {
-  constructor(private userService: UserService) {}
-
+  private static userService = new UserService(new PrismaUserInterface());
   // Register new user
-  register = async (req: Request, res: Response) => {
+  static register = async (req: Request, res: Response) => {
     try {
+      console.log("Registration Called");
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -17,7 +20,7 @@ export class UserController {
           errors: errors.array()
         });
       }
-
+      logger.info("Registration Body:", req.body);
       const result = await this.userService.createUser(req.body);
       
       if (result.success) {
@@ -36,7 +39,7 @@ export class UserController {
   };
 
   // Login user
-  login = async (req: Request, res: Response) => {
+  static login = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -65,7 +68,7 @@ export class UserController {
   };
 
   // Verify email
-  verifyEmail = async (req: Request, res: Response) => {
+  static verifyEmail = async (req: Request, res: Response) => {
     try {
       const { token } = req.params;
       const result = await this.userService.verifyEmail(token);
@@ -86,7 +89,7 @@ export class UserController {
   };
 
   // Forgot password
-  forgotPassword = async (req: Request, res: Response) => {
+  static forgotPassword = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -110,7 +113,7 @@ export class UserController {
   };
 
   // Reset password
-  resetPassword = async (req: Request, res: Response) => {
+  static resetPassword = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -139,7 +142,7 @@ export class UserController {
   };
 
   // Change password (authenticated user)
-  changePassword = async (req: Request, res: Response) => {
+  static changePassword = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -176,7 +179,7 @@ export class UserController {
   };
 
   // Get current user profile
-  getProfile = async (req: Request, res: Response) => {
+  static getProfile = async (req: Request, res: Response) => {
     try {
       const userId = req.user?.userId;
       if (!userId) {
@@ -204,7 +207,7 @@ export class UserController {
   };
 
   // Update user profile
-  updateProfile = async (req: Request, res: Response) => {
+  static updateProfile = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -241,7 +244,7 @@ export class UserController {
   };
 
   // Logout
-  logout = async (req: Request, res: Response) => {
+  static logout = async (req: Request, res: Response) => {
     try {
       const result = await this.userService.logout();
       return res.status(200).json(result);
@@ -255,7 +258,7 @@ export class UserController {
   };
 
   // Get user by ID (admin function)
-  getUserById = async (req: Request, res: Response) => {
+  static getUserById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const userId = parseInt(id);
@@ -285,7 +288,7 @@ export class UserController {
   };
 
   // Update user (admin function)
-  updateUser = async (req: Request, res: Response) => {
+  static updateUser = async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -324,7 +327,7 @@ export class UserController {
   };
 
   // Delete user (admin function)
-  deleteUser = async (req: Request, res: Response) => {
+  static deleteUser = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const userId = parseInt(id);

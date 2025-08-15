@@ -1,15 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { UserController } from '../controllers/UserController';
-import { UserService } from '../services/UserService';
-import { PrismaUserRepository } from '../infrastructure/database/PrismaUserRepository';
 import { authenticateToken, requireRole } from '../middleware/auth';
-
-// Create instances
-// Note: In a real application, you would use dependency injection
-const prismaUser = new PrismaUserRepository();
-const userService = new UserService(prismaUser);
-const userController = new UserController(userService);
 
 const router = Router();
 
@@ -29,8 +21,7 @@ const validateRegistration = [
     .withMessage('Please provide a valid email address'),
   body('password')
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+    .withMessage('Password must be at least 8 characters long'),
   body('phoneNumber')
     .optional(),
   body('gender')
@@ -82,7 +73,6 @@ const validateResetPassword = [
   body('newPassword')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character')
 ];
 
 const validateChangePassword = [
@@ -92,7 +82,6 @@ const validateChangePassword = [
   body('newPassword')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character')
 ];
 
 const validateUpdateProfile = [
@@ -119,22 +108,22 @@ const validateUpdateProfile = [
 ];
 
 // Public routes
-router.post('/register', validateRegistration, userController.register);
-router.post('/login', validateLogin, userController.login);
-router.post('/logout', userController.logout);
-router.post('/forgot-password', validateForgotPassword, userController.forgotPassword);
-router.post('/reset-password', validateResetPassword, userController.resetPassword);
-router.get('/verify-email/:token', userController.verifyEmail);
+router.post('/register', validateRegistration, UserController.register);
+router.post('/login', validateLogin, UserController.login);
+router.post('/logout', UserController.logout);
+router.post('/forgot-password', validateForgotPassword, UserController.forgotPassword);
+router.post('/reset-password', validateResetPassword, UserController.resetPassword);
+router.get('/verify-email/:token', UserController.verifyEmail);
 
 // Protected routes (require authentication)
-router.get('/profile', authenticateToken, userController.getProfile);
-router.put('/profile', authenticateToken, validateUpdateProfile, userController.updateProfile);
-router.post('/change-password', authenticateToken, validateChangePassword, userController.changePassword);
+router.get('/profile', authenticateToken, UserController.getProfile);
+router.put('/profile', authenticateToken, validateUpdateProfile, UserController.updateProfile);
+router.post('/change-password', authenticateToken, validateChangePassword, UserController.changePassword);
 
 // Admin-only routes
-router.get('/:id', authenticateToken, requireRole(['ADMIN']), userController.getUserById);
-router.put('/:id', authenticateToken, requireRole(['ADMIN']), validateUpdateProfile, userController.updateUser);
-router.delete('/:id', authenticateToken, requireRole(['ADMIN']), userController.deleteUser);
+router.get('/:id', authenticateToken, requireRole(['ADMIN']), UserController.getUserById);
+router.put('/:id', authenticateToken, requireRole(['ADMIN']), validateUpdateProfile, UserController.updateUser);
+router.delete('/:id', authenticateToken, requireRole(['ADMIN']), UserController.deleteUser);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

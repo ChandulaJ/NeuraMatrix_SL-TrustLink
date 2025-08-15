@@ -11,7 +11,7 @@ export class UserService implements UserInterface {
   async createUser(data: CreateUserData): Promise<UserResponse> {
     try {
       // Check if user already exists
-      const existingUser = await this.prismaUser.findUnique({ email: data.email });
+      const existingUser = await this.prismaUser.findUserByEmail(data.email);
 
       if (existingUser) {
         return {
@@ -47,7 +47,7 @@ export class UserService implements UserInterface {
       const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
       // Create user
-      const user = await this.prismaUser.create({
+      const userResponse = await this.prismaUser.createUser({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -60,6 +60,12 @@ export class UserService implements UserInterface {
         passportNo: data.passportNo,
         businessRegNo: data.businessRegNo
       });
+      
+      if (!userResponse.success || !userResponse.data) {
+        return userResponse;
+      }
+      
+      const user = userResponse.data;
 
       // Generate JWT token
       const token = generateToken(user.id, user.email, user.role);
@@ -88,7 +94,16 @@ export class UserService implements UserInterface {
   async login(data: LoginData): Promise<UserResponse> {
     try {
       // Find user by email
-      const user = await this.prismaUser.findUnique({ email: data.email });
+      const userResponse = await this.prismaUser.findUserByEmail(data.email);
+      
+      if (!userResponse) {
+        return {
+          success: false,
+          message: 'Invalid email or password'
+        };
+      }
+      
+      const user = userResponse;
 
       if (!user) {
         return {
@@ -113,10 +128,7 @@ export class UserService implements UserInterface {
       }
 
       // Update last login
-      await this.prismaUser.update(
-        { id: user.id },
-        { lastLoginAt: new Date() }
-      );
+      await this.prismaUser.updateUser(user.id, { lastLoginAt: new Date() });
 
       // Generate JWT token
       const token = generateToken(user.id, user.email, user.role);
@@ -144,7 +156,7 @@ export class UserService implements UserInterface {
 
   async verifyEmail(token: string): Promise<UserResponse> {
     try {
-      const user = await this.prismaUser.findFirst({ emailVerificationToken: token });
+      const user = await this.prismaUser.findFirst({ where: { emailVerificationToken: token } });
 
       if (!user) {
         return {
@@ -153,13 +165,10 @@ export class UserService implements UserInterface {
         };
       }
 
-      await this.prismaUser.update(
-        { id: user.id },
-        {
-          isEmailVerified: true,
-          emailVerificationToken: undefined
-        }
-      );
+      await this.prismaUser.updateUser(user.id, {
+        isEmailVerified: true,
+        emailVerificationToken: undefined
+      });
 
       return {
         success: true,
@@ -191,13 +200,10 @@ export class UserService implements UserInterface {
       const passwordResetToken = crypto.randomBytes(32).toString('hex');
       const passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
 
-      await this.prismaUser.update(
-        { id: user.id },
-        {
-          passwordResetToken,
-          passwordResetExpires
-        }
-      );
+      await this.prismaUser.updateUser(user.id, {
+        passwordResetToken,
+        passwordResetExpires
+      });
 
       // TODO: Send email with reset link
       // For now, just return the token (in production, send via email)
@@ -221,7 +227,7 @@ export class UserService implements UserInterface {
   async resetPassword(data: ResetPasswordData): Promise<UserResponse> {
     try {
       const user = await this.prismaUser.findFirst({
-        passwordResetToken: data.token
+        where: { passwordResetToken: data.token }
       });
 
       if (!user) {
@@ -243,14 +249,11 @@ export class UserService implements UserInterface {
       const saltRounds = 12;
       const hashedPassword = await bcrypt.hash(data.newPassword, saltRounds);
 
-      await this.prismaUser.update(
-        { id: user.id },
-        {
-          password: hashedPassword,
-          passwordResetToken: undefined,
-          passwordResetExpires: undefined
-        }
-      );
+      await this.prismaUser.updateUser(user.id, {
+        password: hashedPassword,
+        passwordResetToken: undefined,
+        passwordResetExpires: undefined
+      });
 
       return {
         success: true,
@@ -268,7 +271,7 @@ export class UserService implements UserInterface {
 
   async changePassword(userId: number, data: ChangePasswordData): Promise<UserResponse> {
     try {
-      const user = await this.prismaUser.findUnique({ id: userId });
+      const user = await this.prismaUser.findUnique({ where: { id: userId } });
 
       if (!user) {
         return {
@@ -296,10 +299,7 @@ export class UserService implements UserInterface {
       const saltRounds = 12;
       const hashedPassword = await bcrypt.hash(data.newPassword, saltRounds);
 
-      await this.prismaUser.update(
-        { id: userId },
-        { password: hashedPassword }
-      );
+      await this.prismaUser.updateUser(userId, { password: hashedPassword });
 
       return {
         success: true,
@@ -317,7 +317,7 @@ export class UserService implements UserInterface {
 
   async getProfile(userId: number): Promise<UserResponse> {
     try {
-      const user = await this.prismaUser.findUnique({ id: userId });
+      const user = await this.prismaUser.findUnique({ where: { id: userId } });
 
       if (!user) {
         return {
@@ -346,8 +346,8 @@ export class UserService implements UserInterface {
 
   async updateProfile(userId: number, data: UpdateProfileData): Promise<UserResponse> {
     try {
-      const updatedUser = await this.prismaUser.update(
-        { id: userId },
+      const updatedUserResponse = await this.prismaUser.updateUser(
+        userId,
         {
           firstName: data.firstName,
           lastName: data.lastName,
@@ -356,6 +356,12 @@ export class UserService implements UserInterface {
           dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined
         }
       );
+      
+      if (!updatedUserResponse.success || !updatedUserResponse.data) {
+        return updatedUserResponse;
+      }
+      
+      const updatedUser = updatedUserResponse.data;
 
       // Remove sensitive data
       const { password: _, emailVerificationToken: __, ...userProfile } = updatedUser;
@@ -394,7 +400,7 @@ export class UserService implements UserInterface {
 
   async getUserById(id: number): Promise<UserResponse> {
     try {
-      const user = await this.prismaUser.findUnique({ id });
+      const user = await this.prismaUser.findUnique({ where: { id } });
       
       if (!user) {
         return {
@@ -419,7 +425,13 @@ export class UserService implements UserInterface {
 
   async updateUser(id: number, data: Partial<User>): Promise<UserResponse> {
     try {
-      const updatedUser = await this.prismaUser.update({ id }, data);
+      const updatedUserResponse = await this.prismaUser.updateUser(id, data);
+      
+      if (!updatedUserResponse.success || !updatedUserResponse.data) {
+        return updatedUserResponse;
+      }
+      
+      const updatedUser = updatedUserResponse.data;
       
       return {
         success: true,
@@ -437,7 +449,7 @@ export class UserService implements UserInterface {
 
   async deleteUser(id: number): Promise<UserResponse> {
     try {
-      await this.prismaUser.delete({ id });
+      await this.prismaUser.deleteUser(id);
       
       return {
         success: true,
