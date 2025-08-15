@@ -115,6 +115,8 @@ router.post('/forgot-password', validateForgotPassword, UserController.forgotPas
 router.post('/reset-password', validateResetPassword, UserController.resetPassword);
 router.get('/verify-email/:token', UserController.verifyEmail);
 
+router.get('/profile/:email', UserController.getUserByEmail);
+
 // Protected routes (require authentication)
 router.get('/profile', authenticateToken, UserController.getProfile);
 router.put('/profile', authenticateToken, validateUpdateProfile, UserController.updateProfile);

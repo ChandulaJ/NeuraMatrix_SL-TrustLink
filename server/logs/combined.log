@@ -84,3 +84,23 @@
 {"level":"info","message":"Server started on port 3000","timestamp":"2025-08-15 22:10:31"}
 {"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-15 22:10:38"}
 {"level":"info","message":"Uploaded 1 documents for appointment.","timestamp":"2025-08-15 22:13:13"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 00:30:12"}
+{"level":"error","message":"Failed to ensure bucket exists: ","timestamp":"2025-08-16 00:30:12"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 00:30:13"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 00:30:13"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 00:30:25"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 00:30:25"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 00:30:25"}
+{"level":"error","message":"Failed to ensure bucket exists: ","timestamp":"2025-08-16 00:30:25"}
+{"level":"error","message":"Error during server startup: Reached the max retries per request limit (which is 20). Refer to \"maxRetriesPerRequest\" option for details.","stack":"MaxRetriesPerRequestError: Reached the max retries per request limit (which is 20). Refer to \"maxRetriesPerRequest\" option for details.\n    at Socket.<anonymous> (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\node_modules\\ioredis\\built\\redis\\event_handler.js:182:37)\n    at Object.onceWrapper (node:events:622:26)\n    at Socket.emit (node:events:507:28)\n    at Socket.emit (node:domain:489:12)\n    at TCP.<anonymous> (node:net:351:12)","timestamp":"2025-08-16 00:30:35"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 00:32:53"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 00:32:53"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 00:32:53"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 00:32:53"}
+{"level":"info","message":"Server started on port 3000","timestamp":"2025-08-16 00:32:53"}
+{"level":"info","message":"Created bucket: appointment-documents","timestamp":"2025-08-16 00:32:53"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 00:36:28"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 00:36:29"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 00:36:29"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 00:36:29"}
+{"level":"info","message":"Server started on port 3000","timestamp":"2025-08-16 00:36:29"}

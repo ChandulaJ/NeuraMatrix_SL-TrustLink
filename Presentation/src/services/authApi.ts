@@ -35,7 +35,7 @@ export interface AuthResponse {
 export const authApi = {
   register: async (payload: RegisterRequest): Promise<AuthResponse> => {
     try {
-      const res = await fetch(`${API_BASE_URL}/user/register`, {
+      const res = await fetch(`${API_BASE_URL}/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -52,7 +52,7 @@ export const authApi = {
 
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      const res = await fetch(`${API_BASE_URL}/user/login`, {
+      const res = await fetch(`${API_BASE_URL}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -69,7 +69,7 @@ export const authApi = {
 
   getProfile: async (token: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/user/profile`, {
+      const res = await fetch(`${API_BASE_URL}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -83,7 +83,7 @@ export const authApi = {
 
   updateProfile: async (token: string, updates: any) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/user/profile`, {
+      const res = await fetch(`${API_BASE_URL}/users/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(updates),

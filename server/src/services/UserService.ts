@@ -463,4 +463,29 @@ export class UserService implements UserInterface {
       };
     }
   }
+
+  async getUserByEmail(email: string): Promise<UserResponse> {
+    try {
+      const user = await this.prismaUser.findUserByEmail(email);
+
+      if (!user) {
+        return {
+          success: false,
+          message: 'User not found'
+        };
+      }
+
+      return {
+        success: true,
+        message: 'User retrieved successfully',
+        data: { user }
+      };
+    } catch (error) {
+      console.error('Get user by email error:', error);
+      return {
+        success: false,
+        message: 'Internal server error while fetching user by email'
+      };
+    }
+  }
 }

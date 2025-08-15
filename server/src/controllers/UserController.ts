@@ -355,4 +355,25 @@ export class UserController {
       });
     }
   };
+
+  static getUserByEmail = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.params;
+
+      const result = await this.userService.getUserByEmail(email);
+
+      if (result.success) {
+        return res.status(200).json(result);
+      } else {
+        return res.status(404).json(result);
+      }
+
+    } catch (error) {
+      console.error('Get user by email error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error while fetching user by email'
+      });
+    }
+  };
 }
