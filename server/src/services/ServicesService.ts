@@ -28,4 +28,14 @@ export class ServicesService {
             throw new Error("Could not fetch services");
         }
     }
+
+    async getServicesByDepartment(departmentId: number): Promise<Service[]> {
+        try {
+            return await this.serviceInterface.getServicesByDepartment(departmentId);
+        } catch (error) {
+            logger.error("Error fetching services by department:", error);
+            throw new Error("Could not fetch services");
+        }
+    }
+
 }

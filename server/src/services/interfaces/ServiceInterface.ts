@@ -6,4 +6,5 @@ export interface ServiceInterface {
   updateService(id: string, data: Partial<Service>): Promise<Service | null>;
   deleteService(id: string): Promise<boolean>;
   getAllServices(): Promise<Service[]>;
+  getServicesByDepartment(departmentId: number): Promise<Service[]>;
 }

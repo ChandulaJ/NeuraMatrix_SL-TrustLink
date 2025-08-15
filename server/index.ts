@@ -28,7 +28,7 @@ const PORT = 3000;
 
 async function startServer() {
   try {
-    await seedDummyDepartmentsAndServices();
+    // await seedDummyDepartmentsAndServices();
 
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);

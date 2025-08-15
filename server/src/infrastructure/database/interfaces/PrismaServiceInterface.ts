@@ -23,4 +23,8 @@ export class PrismaServiceInterface implements ServiceInterface {
     async getAllServices(): Promise<Service[]> {
         return await prisma.service.findMany();
     }
+
+    async getServicesByDepartment(departmentId: number): Promise<Service[]> {
+        return await prisma.service.findMany({ where: { departmentId } });
+    }
 }
