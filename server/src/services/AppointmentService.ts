@@ -13,6 +13,8 @@ import { Request, Response } from 'express';
 import { sseManager } from '../controllers/SSEController';
 import { UserInterface } from './interfaces/UserInterface';
 import { ServiceInterface } from './interfaces/ServiceInterface';
+import qrcode from 'qrcode-terminal';
+import { sendQRCode } from './WhatsappService';
 
 export class AppointmentService {
   constructor(
@@ -45,6 +47,7 @@ export class AppointmentService {
         throw new Error('User not found');
       }
       const userEmail = user.data.email;
+      const userPhoneNumber = user.data.phoneNumber;
 
       //get the service booked
       const serviceId = appointmentData.serviceId;
@@ -103,6 +106,33 @@ export class AppointmentService {
             ? created.scheduledAt.toISOString()
             : new Date(created.scheduledAt as any).toISOString(),
       });
+
+      // Generate QR code data
+      const qrCodeData = JSON.stringify({
+        appointmentId: created.id,
+        userId: created.userId,
+        serviceName: serviceName,
+        scheduledAt: created.scheduledAt,
+        reference: created.reference,
+        status: created.status
+      }, null, 2);
+
+      // Display QR code in terminal (for debugging)
+      const qrCode = qrcode.generate(qrCodeData);
+
+      // Send QR code via WhatsApp if user has phone number
+      if (userPhoneNumber) {
+        try {
+          const caption = `Your appointment QR code for ${serviceName}\nDate: ${created.scheduledAt.toLocaleDateString()}\nTime: ${created.scheduledAt.toLocaleTimeString()}\nReference: ${created.reference}`;
+          await sendQRCode(userPhoneNumber, qrCodeData, caption);
+          logger.info(`QR code sent to WhatsApp for user ${userId}`);
+        } catch (whatsappError) {
+          logger.error(`Failed to send QR code via WhatsApp: ${(whatsappError as Error).message}`);
+          // Don't throw error here as appointment creation should still succeed
+        }
+      } else {
+        logger.info(`User ${userId} has no phone number, skipping WhatsApp QR code`);
+      }
 
       return created;
     } catch (error) {

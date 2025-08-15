@@ -136,4 +136,33 @@ router.get('/health', (req, res) => {
   });
 });
 
+// Test route for sending QR codes via WhatsApp (for development/testing)
+router.post('/test-whatsapp-qr', authenticateToken, async (req, res) => {
+  try {
+    const { phoneNumber, data, caption } = req.body;
+    
+    if (!phoneNumber || !data) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number and data are required'
+      });
+    }
+    
+    const { sendQRCode } = await import('../services/WhatsappService');
+    const result = await sendQRCode(phoneNumber, data, caption);
+    
+    res.json({
+      success: true,
+      message: 'QR code sent successfully',
+      result
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send QR code',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 export default router;

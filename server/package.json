@@ -1,19 +1,24 @@
 {
   "dependencies": {
     "@prisma/client": "^6.14.0",
-    "express": "^5.1.0",
-    "minio": "^8.0.5",
-    "multer": "^2.0.2",
+    "@types/ioredis": "^5.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/qrcode-terminal": "^0.12.2",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
+    "bullmq": "^5.57.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
+    "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "@types/ioredis": "^5.0.0",
-    "bullmq": "^5.57.0",
-    "nodemailer": "^7.0.5"
+    "minio": "^8.0.5",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.32.0"
   },
   "scripts": {
     "start": "ts-node index.ts",
@@ -25,16 +30,16 @@
     "schema": "src/prisma/schema.prisma"
   },
   "devDependencies": {
-    "@types/bull": "^4.10.4",
-    "@types/node": "^24.2.1",
-    "@types/nodemailer": "^6.4.17",
     "@types/bcryptjs": "^2.4.6",
+    "@types/bull": "^4.10.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/ioredis": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/minio": "^7.1.1",
     "@types/multer": "^2.0.0",
-    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.2.1",
+    "@types/nodemailer": "^6.4.17",
     "@types/winston": "^2.4.4",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2"

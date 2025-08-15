@@ -12,6 +12,7 @@ import {
 } from './src/infrastructure/database/seed';
 import logger from './src/shared/logger';
 import { notificationService } from './src/services/NotificationService';
+import { initializeWhatsApp } from './src/services/WhatsappService';
 
 const app = express();
 
@@ -63,6 +64,8 @@ async function startServer() {
     await notificationService.start();
     logger.info('Notification service started successfully');
 
+    // Initialize WhatsApp client
+    await initializeWhatsApp();
     // Start HTTP server
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);
