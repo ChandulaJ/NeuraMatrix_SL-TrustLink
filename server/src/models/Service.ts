@@ -1,3 +1,5 @@
+import { Department } from "./Department";
+
 export interface Service {
   id: number;
   name: string;
@@ -8,6 +10,9 @@ export interface Service {
   availableSlots?: number; // Number of available slots
   requirements: string[];
   category?: string; // Category of the service
+  status: "available" | "not available";
   createdAt: Date;
   updatedAt: Date;
+
+  department?: Department;
 }

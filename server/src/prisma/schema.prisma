@@ -55,6 +55,7 @@ model Service {
   availableSlots Int?
   category     String?
   appointments Appointment[]
+  status       String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -69,6 +70,7 @@ model Appointment {
   status       AppointmentStatus
   scheduledAt  DateTime
   notes        String?
+  reference   String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   documents    Json?

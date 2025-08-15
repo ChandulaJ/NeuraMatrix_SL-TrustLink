@@ -8,7 +8,7 @@ export class PrismaServiceInterface implements ServiceInterface {
     }
 
     async getServiceById(id: number): Promise<Service | null> {
-        return await prisma.service.findUnique({ where: { id } });
+        return await prisma.service.findUnique({ where: { id }, include: { department: true } });
     }
 
     async updateService(id: number, data: Partial<Service>): Promise<Service | null> {
@@ -21,10 +21,10 @@ export class PrismaServiceInterface implements ServiceInterface {
     }
 
     async getAllServices(): Promise<Service[]> {
-        return await prisma.service.findMany();
+        return await prisma.service.findMany({ include: { department: true } });
     }
 
     async getServicesByDepartment(departmentId: number): Promise<Service[]> {
-        return await prisma.service.findMany({ where: { departmentId } });
+        return await prisma.service.findMany({ where: { departmentId }, include: { department: true } });
     }
 }

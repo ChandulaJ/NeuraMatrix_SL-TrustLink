@@ -1,48 +1,75 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Layout } from "@/components/Layout";
 import { Calendar, Clock, QrCode, FileText, CheckCircle, AlertCircle } from "lucide-react";
+import { getAllServices } from "@/services/servicesApi";
+import {appointmentApi} from "@/services/appointmentApi";
+import { useToast } from "@/components/ui/use-toast";
+
 
 const Dashboard = () => {
   const [userName] = useState("John Doe");
+  const [recentServices, setRecentServices] = useState<any>(null);
+  const [bookedAppointments, setBookedAppointments] = useState<any[]>([]);
+  const { toast } = useToast();
 
-  const recentServices = [
-    { name: "Passport Renewal", department: "Immigration", date: "2024-01-15", status: "completed" },
-    { name: "Driving License", department: "Motor Traffic", date: "2024-01-10", status: "pending" },
-    { name: "Birth Certificate", department: "Registrar General", date: "2024-01-05", status: "completed" }
-  ];
+  useEffect(() => {
+      const fetchService = async () => {
+        try {
+          const serviceData = await getAllServices();
+          const bookingData = await appointmentApi.getUserAppointments(1);
+          setRecentServices(serviceData);
+          setBookedAppointments(bookingData);
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to load dashboard details",
+            variant: "destructive"
+          });
+        }
+      };
+  
+    fetchService();
+    }, [toast]);
 
-  const bookedAppointments = [
-    {
-      id: 1,
-      service: "Passport Renewal",
-      department: "Immigration Department",
-      date: "2024-01-25",
-      time: "10:00 AM",
-      status: "upcoming",
-      reference: "APP-2024-001"
-    },
-    {
-      id: 2,
-      service: "Vehicle Registration",
-      department: "Motor Traffic Department",
-      date: "2024-01-30",
-      time: "2:00 PM",
-      status: "upcoming",
-      reference: "APP-2024-002"
-    },
-    {
-      id: 3,
-      service: "Business License",
-      department: "Trade Department",
-      date: "2024-01-20",
-      time: "11:00 AM",
-      status: "completed",
-      reference: "APP-2024-003"
-    }
-  ];
+  // const recentServices = [
+  //   { name: "Passport Renewal", department: "Immigration", date: "2024-01-15", status: "completed" },
+  //   { name: "Driving License", department: "Motor Traffic", date: "2024-01-10", status: "pending" },
+  //   { name: "Birth Certificate", department: "Registrar General", date: "2024-01-05", status: "completed" }
+  // ];
+
+  // const bookedAppointments = [
+  //   {
+  //     id: 1,
+  //     service: "Passport Renewal",
+  //     department: "Immigration Department",
+  //     date: "2024-01-25",
+  //     time: "10:00 AM",
+  //     status: "upcoming",
+  //     reference: "APP-2024-001"
+  //   },
+  //   {
+  //     id: 2,
+  //     service: "Vehicle Registration",
+  //     department: "Motor Traffic Department",
+  //     date: "2024-01-30",
+  //     time: "2:00 PM",
+  //     status: "upcoming",
+  //     reference: "APP-2024-002"
+  //   },
+  //   {
+  //     id: 3,
+  //     service: "Business License",
+  //     department: "Trade Department",
+  //     date: "2024-01-20",
+  //     time: "11:00 AM",
+  //     status: "completed",
+  //     reference: "APP-2024-003"
+  //   }
+  // ];
+  
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -54,6 +81,8 @@ const Dashboard = () => {
   };
 
   const latestAppointment = bookedAppointments.find(apt => apt.status === "upcoming");
+
+  if (!recentServices) return <div>Loading...</div>;
 
   return (
     <Layout>
@@ -110,20 +139,20 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentServices.map((service, index) => (
+                {recentServices.slice(0, 3).map((service, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div>
                       <h4 className="font-medium">{service.name}</h4>
-                      <p className="text-sm text-muted-foreground">{service.department}</p>
-                      <p className="text-xs text-muted-foreground">{service.date}</p>
+                      <p className="text-sm text-muted-foreground">{service.department.name}</p>
+                      <p className="text-xs text-muted-foreground">{service.department.location}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {service.status === "completed" ? (
+                      {service.status === "available" ? (
                         <CheckCircle className="w-4 h-4 text-success" />
                       ) : (
                         <AlertCircle className="w-4 h-4 text-muted-foreground" />
                       )}
-                      <Badge variant={service.status === "completed" ? "default" : "secondary"}>
+                      <Badge variant={service.status === "not available" ? "default" : "secondary"}>
                         {service.status}
                       </Badge>
                     </div>
@@ -146,16 +175,16 @@ const Dashboard = () => {
                 {bookedAppointments.slice(0, 3).map((appointment) => (
                   <div key={appointment.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex-1">
-                      <h4 className="font-medium">{appointment.service}</h4>
-                      <p className="text-sm text-muted-foreground">{appointment.department}</p>
+                      <h4 className="font-medium">{appointment.service.name}</h4>
+                      <p className="text-sm text-muted-foreground">{appointment.service.department.name}</p>
                       <div className="flex items-center gap-4 mt-1">
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {appointment.date}
+                          {new Date(appointment.scheduledAt).toLocaleDateString()}
                         </span>
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {appointment.time}
+                          {new Date(appointment.scheduledAt).toLocaleTimeString()}
                         </span>
                       </div>
                     </div>
@@ -177,3 +206,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

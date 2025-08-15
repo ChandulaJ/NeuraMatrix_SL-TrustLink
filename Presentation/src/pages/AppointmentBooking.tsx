@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Clock, Calendar as CalendarIcon, MapPin, CheckCircle, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { appointmentApi } from "@/services/appointmentApi";
+import { getServiceById } from "@/services/servicesApi";
 
 const AppointmentBooking = () => {
   const { serviceId } = useParams();
@@ -25,18 +26,25 @@ const AppointmentBooking = () => {
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [bookingReference, setBookingReference] = useState<string>("");
+  const [service, setService] = useState<any>(null);
 
-  // Mock service data
-  const service = {
-    id: serviceId,
-    name: "Passport Renewal",
-    description: "Renew your existing passport before expiration",
-    department: "Immigration Department",
-    duration: "45 mins",
-    price: "LKR 5,000",
-    location: "Immigration Office, Colombo 07",
-    requirements: ["Current Passport", "National ID", "Photos"]
-  };
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const serviceData = await getServiceById(Number(serviceId));
+        setService(serviceData);
+        console.log("Service data:", service);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load service details",
+          variant: "destructive"
+        });
+      }
+    };
+
+    fetchService();
+  }, [serviceId, toast]);
 
   // Mock available time slots
   const timeSlots = [
@@ -63,7 +71,7 @@ const AppointmentBooking = () => {
     setShowConfirmation(true);
   };
 
-  const confirmBooking = async () => {
+  const confirmBooking = async (service) => {
     if (!selectedDate || !selectedTime || !serviceId) return;
     
     setIsLoading(true);
@@ -76,18 +84,17 @@ const AppointmentBooking = () => {
       if (!isPM && hour24 === 12) hour24 = 0;
       
       scheduledAt.setHours(hour24, parseInt(minutes));
-
+      const referenceNumber = `APP-${service.id}-${Date.now().toString().slice(-6)}`;
       const appointmentData = {
         userId: 1, // Hardcoded as requested since backend only supports userId = 1
-        serviceId: 1, // Hardcoded as requested since backend only supports serviceId = 1
+        serviceId: service.id, // Hardcoded as requested since backend only supports serviceId = 1
         type: selectedType as 'IN_PERSON' | 'ONLINE',
         status: 'PENDING' as const,
         scheduledAt: scheduledAt.toISOString(),
         notes: notes || undefined,
+        reference: referenceNumber
       };
-
       const appointment = await appointmentApi.create(appointmentData);
-      const referenceNumber = `APP-${appointment.id}-${Date.now().toString().slice(-6)}`;
       setBookingReference(referenceNumber);
       setBookingConfirmed(true);
       setShowConfirmation(false);
@@ -106,6 +113,16 @@ const AppointmentBooking = () => {
       setIsLoading(false);
     }
   };
+  
+  if (!service) {
+  return (
+    <Layout>
+      <div className="max-w-4xl mx-auto py-12 text-center text-muted-foreground">
+        Loading service details...
+      </div>
+    </Layout>
+  );
+}
 
   if (bookingConfirmed) {
     return (
@@ -128,7 +145,7 @@ const AppointmentBooking = () => {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-xl font-heading font-semibold">{service.name}</h3>
-                    <p className="text-primary-foreground/90">{service.department}</p>
+                    <p className="text-primary-foreground/90">{service.department.name}</p>
                   </div>
                   <div className="w-16 h-16 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
                     <QrCode className="w-8 h-8" />
@@ -210,14 +227,14 @@ const AppointmentBooking = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-muted-foreground" />
-                <span>{service.duration}</span>
+                <span>{service.duration} mins</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground" />
-                <span>{service.location}</span>
+                <span>{service.department.location}</span>
               </div>
               <div>
-                <span className="text-lg font-semibold text-primary">{service.price}</span>
+                <span className="text-lg font-semibold text-primary">USD {service.price}</span>
               </div>
             </div>
           </CardContent>
@@ -366,7 +383,7 @@ const AppointmentBooking = () => {
                       </Button>
                       <Button 
                         className="flex-1" 
-                        onClick={confirmBooking}
+                        onClick={() => confirmBooking(service)}
                         disabled={isLoading}
                       >
                         {isLoading ? "Booking..." : "Confirm Booking"}

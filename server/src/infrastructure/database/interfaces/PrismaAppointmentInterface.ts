@@ -1,6 +1,6 @@
 import { Appointment, AppointmentStatus } from "../../../models/Appointment";
 import { AppointmentInterface } from "../../../services/interfaces/AppointmentInterface";
-import { prisma } from "../prisma"; 
+import { prisma } from "../prisma";
 
 
 export class PrismaAppointmentInterface implements AppointmentInterface {
@@ -9,7 +9,14 @@ export class PrismaAppointmentInterface implements AppointmentInterface {
   }
 
   async findById(id: number): Promise<Appointment | null> {
-    return prisma.appointment.findUnique({ where: { id } });
+    return prisma.appointment.findUnique({ where: { id },include: {
+        user: true,
+        service: {
+          include: {
+            department: true,
+          },
+        },
+      }, });
   }
 
   async update(appointment: Appointment): Promise<Appointment> {
@@ -24,6 +31,29 @@ export class PrismaAppointmentInterface implements AppointmentInterface {
   }
 
   async findByUser(userId: number): Promise<Appointment[]> {
-    return prisma.appointment.findMany({ where: { userId } });
+    return prisma.appointment.findMany({ where: { userId },include: {
+        user: true,
+        service: {
+          include: {
+            department: true,
+          },
+        },
+      }, });
   }
+
+  async findLatest(): Promise<Appointment | null> {
+    return prisma.appointment.findFirst({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: true,
+        service: {
+          include: {
+            department: true,
+          },
+        },
+      },
+      take: 1,
+    });
+  }
+
 }

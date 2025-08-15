@@ -164,4 +164,16 @@ export class AppointmentService {
       );
     }
   }
+
+  async generateReference(
+    latestAppointment: Appointment | null
+  ): Promise<string> {
+    const departmentCode =
+      latestAppointment?.service?.department?.code || 'DEPT';
+    const latestNumber = latestAppointment
+      ? parseInt(latestAppointment.reference.split('-')[1])
+      : 0;
+    const newNumber = latestNumber + 1;
+    return `${departmentCode}-${newNumber}`;
+  }
 }
