@@ -1,26 +1,38 @@
 import express, { NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
 import appointmentRoutes from './src/routes/AppointmentRoutes';
-import sseRoutes from './src/routes/SSERoutes';
+import departmentRoutes from './src/routes/DepartmentRoutes';
+import serviceRoutes from './src/routes/ServicesRoutes';
+import authRoutes from './src/routes/authRoutes';
 import {
   seedDummyUser,
-  seedDummyDepartment,
-  seedDummyService,
+  seedDummyDepartmentsAndServices,
 } from './src/infrastructure/database/seed';
 import logger from './src/shared/logger';
+import sseRoutes from './src/routes/SSERoutes';
 
 const app = express();
-app.use(express.json());
 
-app.use('/events', sseRoutes);
+app.use('/events', sseRoutes); // Security middleware
+app.use(helmet());
+app.use(cors());
+
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
 app.use('/appointments', appointmentRoutes);
+app.use('/departments', departmentRoutes);
+app.use('/services', serviceRoutes);
+app.use('/auth', authRoutes);
 
 const PORT = 3000;
 
 async function startServer() {
   try {
-    await seedDummyUser();
-    await seedDummyDepartment();
-    await seedDummyService();
+    await seedDummyDepartmentsAndServices();
 
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);

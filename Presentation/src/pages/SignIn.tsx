@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authApi } from "@/services/authApi";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,13 +17,17 @@ const SignIn = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Success",
-      description: "Welcome back!",
-    });
-    navigate("/dashboard");
+    try {
+      const res = await authApi.login(formData.email, formData.password);
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      toast({ title: "Success", description: "Welcome back!" });
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast({ title: "Login failed", description: err.message, variant: "destructive" });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {

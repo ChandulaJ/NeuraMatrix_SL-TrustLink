@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,21 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { User, Mail, Phone, MapPin, Calendar, Shield, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authApi } from "@/services/authApi";
 
 const Profile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [profileData, setProfileData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@email.com",
-    phone: "+94 77 123 4567",
-    address: "123 Main Street, Colombo 07",
-    dateOfBirth: "1990-01-15",
-    nationalId: "901234567V",
-    memberSince: "2023-06-15"
-  });
+  const [profileData, setProfileData] = useState<any>(null);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -31,14 +23,36 @@ const Profile = () => {
     confirmPassword: ""
   });
 
-  const handleProfileUpdate = (e: React.FormEvent) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsEditing(false);
-    toast({
-      title: "Profile Updated",
-      description: "Your profile information has been updated successfully.",
-    });
+    try {
+      const token = localStorage.getItem('token') || '';
+      const updates = {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        phoneNumber: profileData.phoneNumber,
+        gender: profileData.gender,
+        dateOfBirth: profileData.dateOfBirth?.slice(0,10),
+      };
+      const updated = await authApi.updateProfile(token, updates);
+      setProfileData(updated);
+      setIsEditing(false);
+      toast({ title: "Profile Updated", description: "Your profile information has been updated successfully." });
+    } catch (err: any) {
+      toast({ title: "Update failed", description: err.message, variant: "destructive" });
+    }
   };
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = localStorage.getItem('token') || '';
+        const user = await authApi.getProfile(token);
+        setProfileData(user);
+      } catch (err) {
+        // ignore for now
+      }
+    })();
+  }, []);
 
   const handlePasswordUpdate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,12 +91,12 @@ const Profile = () => {
           <div className="lg:col-span-1">
             <Card className="shadow-card">
               <CardHeader className="text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-4">
+                 <Avatar className="w-24 h-24 mx-auto mb-4">
                   <AvatarFallback className="text-2xl">
-                    {profileData.firstName[0]}{profileData.lastName[0]}
+                     {profileData?.firstName?.[0] || 'U'}{profileData?.lastName?.[0] || ''}
                   </AvatarFallback>
                 </Avatar>
-                <CardTitle className="text-xl">{profileData.firstName} {profileData.lastName}</CardTitle>
+                 <CardTitle className="text-xl">{profileData?.firstName} {profileData?.lastName}</CardTitle>
                 <CardDescription>Verified Citizen</CardDescription>
                 <Badge variant="secondary" className="mt-2">
                   <Shield className="w-3 h-3 mr-1" />
@@ -93,19 +107,19 @@ const Profile = () => {
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Mail className="w-4 h-4" />
-                    <span>{profileData.email}</span>
+                     <span>{profileData?.email}</span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Phone className="w-4 h-4" />
-                    <span>{profileData.phone}</span>
+                     <span>{profileData?.phoneNumber || '-'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <MapPin className="w-4 h-4" />
-                    <span>{profileData.address}</span>
+                     <span>-</span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    <span>Member since {new Date(profileData.memberSince).toLocaleDateString()}</span>
+                     <span>Member since {profileData?.createdAt ? new Date(profileData.createdAt).toLocaleDateString() : '-'}</span>
                   </div>
                 </div>
               </CardContent>
@@ -142,19 +156,19 @@ const Profile = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">First Name</Label>
-                          <Input
+                           <Input
                             id="firstName"
-                            value={profileData.firstName}
-                            onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                             value={profileData?.firstName || ''}
+                             onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
                             disabled={!isEditing}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">Last Name</Label>
-                          <Input
+                           <Input
                             id="lastName"
-                            value={profileData.lastName}
-                            onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                             value={profileData?.lastName || ''}
+                             onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
                             disabled={!isEditing}
                           />
                         </div>
@@ -162,21 +176,21 @@ const Profile = () => {
 
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address</Label>
-                        <Input
+                         <Input
                           id="email"
                           type="email"
-                          value={profileData.email}
-                          onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                           value={profileData?.email || ''}
+                           onChange={(e) => setProfileData({...profileData, email: e.target.value})}
                           disabled={!isEditing}
                         />
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number</Label>
-                        <Input
+                         <Input
                           id="phone"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                           value={profileData?.phoneNumber || ''}
+                           onChange={(e) => setProfileData({...profileData, phoneNumber: e.target.value})}
                           disabled={!isEditing}
                         />
                       </div>
@@ -194,19 +208,19 @@ const Profile = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                          <Input
+                           <Input
                             id="dateOfBirth"
                             type="date"
-                            value={profileData.dateOfBirth}
-                            onChange={(e) => setProfileData({...profileData, dateOfBirth: e.target.value})}
+                             value={profileData?.dateOfBirth ? profileData.dateOfBirth.slice(0,10) : ''}
+                             onChange={(e) => setProfileData({...profileData, dateOfBirth: e.target.value})}
                             disabled={!isEditing}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="nationalId">National ID</Label>
-                          <Input
+                           <Input
                             id="nationalId"
-                            value={profileData.nationalId}
+                             value={profileData?.nationalId || ''}
                             disabled
                             className="bg-muted"
                           />

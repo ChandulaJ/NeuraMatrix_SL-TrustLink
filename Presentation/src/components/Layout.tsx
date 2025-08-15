@@ -33,10 +33,9 @@ export const Layout = ({ children }: LayoutProps) => {
   ];
 
   const handleLogout = () => {
-    toast({
-      title: "Logged out",
-      description: "You have been logged out successfully.",
-    });
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    toast({ title: "Logged out", description: "You have been logged out successfully." });
     navigate("/signin");
   };
 

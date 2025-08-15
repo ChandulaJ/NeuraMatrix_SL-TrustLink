@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,79 +10,98 @@ import { ArrowLeft, Search, Clock, Users, FileText, ChevronRight } from "lucide-
 const DepartmentServices = () => {
   const { departmentId } = useParams();
   const navigate = useNavigate();
+  const [services, setServices] = useState([]);
+  const [department, setDepartment] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Mock department data - in real app, fetch based on departmentId
-  const department = {
-    id: departmentId,
-    name: "Immigration Department",
-    code: "IMM",
-    description: "Complete immigration services for citizens and visitors",
-    icon: "🛂"
-  };
+  // const department = {
+  //   id: departmentId,
+  //   name: "Immigration Department",
+  //   code: "IMM",
+  //   description: "Complete immigration services for citizens and visitors",
+  //   icon: "🛂"
+  // };
 
-  const services = [
-    {
-      id: 1,
-      name: "New Passport Application",
-      description: "Apply for a new Sri Lankan passport with all required documents",
-      duration: "60 mins",
-      price: "LKR 3,500",
-      requirements: ["Birth Certificate", "National ID", "Photos"],
-      availableSlots: 15,
-      category: "Passport Services"
-    },
-    {
-      id: 2,
-      name: "Passport Renewal",
-      description: "Renew your existing passport before expiration",
-      duration: "45 mins",
-      price: "LKR 5,000",
-      requirements: ["Current Passport", "National ID", "Photos"],
-      availableSlots: 8,
-      category: "Passport Services"
-    },
-    {
-      id: 3,
-      name: "Emergency Travel Document",
-      description: "Obtain emergency travel documents for urgent travel needs",
-      duration: "30 mins",
-      price: "LKR 7,500",
-      requirements: ["Police Report", "Travel Tickets", "Photos"],
-      availableSlots: 3,
-      category: "Emergency Services"
-    },
-    {
-      id: 4,
-      name: "Visa Endorsement",
-      description: "Get visa endorsements for international travel",
-      duration: "90 mins",
-      price: "LKR 2,000",
-      requirements: ["Passport", "Visa Application", "Supporting Documents"],
-      availableSlots: 12,
-      category: "Visa Services"
-    },
-    {
-      id: 5,
-      name: "Exit Permit",
-      description: "Apply for exit permits for special circumstances",
-      duration: "75 mins",
-      price: "LKR 1,500",
-      requirements: ["National ID", "Application Form", "Supporting Evidence"],
-      availableSlots: 6,
-      category: "Permits"
-    },
-    {
-      id: 6,
-      name: "Dual Citizenship Certificate",
-      description: "Apply for dual citizenship certification",
-      duration: "120 mins",
-      price: "LKR 25,000",
-      requirements: ["Birth Certificate", "Foreign Passport", "Tax Clearance"],
-      availableSlots: 2,
-      category: "Citizenship Services"
-    }
-  ];
+  // const services = [
+  //   {
+  //     id: 1,
+  //     name: "New Passport Application",
+  //     description: "Apply for a new Sri Lankan passport with all required documents",
+  //     duration: "60 mins",
+  //     price: "LKR 3,500",
+  //     requirements: ["Birth Certificate", "National ID", "Photos"],
+  //     availableSlots: 15,
+  //     category: "Passport Services"
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Passport Renewal",
+  //     description: "Renew your existing passport before expiration",
+  //     duration: "45 mins",
+  //     price: "LKR 5,000",
+  //     requirements: ["Current Passport", "National ID", "Photos"],
+  //     availableSlots: 8,
+  //     category: "Passport Services"
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Emergency Travel Document",
+  //     description: "Obtain emergency travel documents for urgent travel needs",
+  //     duration: "30 mins",
+  //     price: "LKR 7,500",
+  //     requirements: ["Police Report", "Travel Tickets", "Photos"],
+  //     availableSlots: 3,
+  //     category: "Emergency Services"
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Visa Endorsement",
+  //     description: "Get visa endorsements for international travel",
+  //     duration: "90 mins",
+  //     price: "LKR 2,000",
+  //     requirements: ["Passport", "Visa Application", "Supporting Documents"],
+  //     availableSlots: 12,
+  //     category: "Visa Services"
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Exit Permit",
+  //     description: "Apply for exit permits for special circumstances",
+  //     duration: "75 mins",
+  //     price: "LKR 1,500",
+  //     requirements: ["National ID", "Application Form", "Supporting Evidence"],
+  //     availableSlots: 6,
+  //     category: "Permits"
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Dual Citizenship Certificate",
+  //     description: "Apply for dual citizenship certification",
+  //     duration: "120 mins",
+  //     price: "LKR 25,000",
+  //     requirements: ["Birth Certificate", "Foreign Passport", "Tax Clearance"],
+  //     availableSlots: 2,
+  //     category: "Citizenship Services"
+  //   }
+  // ];
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      const response = await fetch(`http://localhost:3000/services/department/${departmentId}`);
+      const data = await response.json();
+      console.log("Services:", data);
+      setServices(data);
+    };
+    const fetchDepartment = async () => {
+      const response = await fetch(`http://localhost:3000/departments/${departmentId}`);
+      const data = await response.json();
+      console.log("Department:", data);
+      setDepartment(data);
+    };
+    fetchServices();
+    fetchDepartment();
+  }, []);
 
   const filteredServices = services.filter(service =>
     service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -109,6 +128,11 @@ const DepartmentServices = () => {
     return "Fully Booked";
   };
 
+  if (!department) {
+    // Loading state or placeholder while department data is loading
+    return <div>Loading department details...</div>;
+  }
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -118,7 +142,7 @@ const DepartmentServices = () => {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="flex items-center gap-3">
-            <div className="text-3xl">{department.icon}</div>
+            <div className="text-3xl">{department.icon || "🛂"}</div>
             <div>
               <h1 className="text-3xl font-heading font-bold text-foreground">{department.name}</h1>
               <p className="text-muted-foreground">{department.description}</p>
@@ -181,7 +205,7 @@ const DepartmentServices = () => {
 
                     {/* Price */}
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold text-primary">{service.price}</span>
+                      <span className="text-lg font-semibold text-primary">USD:{service.price}</span>
                       <Badge className={getAvailabilityColor(service.availableSlots)}>
                         {getAvailabilityText(service.availableSlots)}
                       </Badge>
@@ -194,7 +218,7 @@ const DepartmentServices = () => {
                         Required Documents
                       </h4>
                       <div className="flex flex-wrap gap-1">
-                        {service.requirements.map((req, index) => (
+                        {(service.requirements ?? []).map((req, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {req}
                           </Badge>
@@ -203,8 +227,8 @@ const DepartmentServices = () => {
                     </div>
 
                     {/* Book Button */}
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       onClick={() => handleBookAppointment(service.id)}
                       disabled={service.availableSlots === 0}
                     >

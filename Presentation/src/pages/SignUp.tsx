@@ -6,20 +6,28 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authApi, type Role } from "@/services/authApi";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: ""
+    phoneNumber: "",
+    gender: "" as "MALE" | "FEMALE" | "OTHER" | "",
+    dateOfBirth: "",
+    role: "CITIZEN" as Role,
+    nationalId: "",
+    passportNo: "",
+    businessRegNo: ""
   });
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -29,11 +37,28 @@ const SignUp = () => {
       });
       return;
     }
-    toast({
-      title: "Success",
-      description: "Account created successfully! Please sign in.",
-    });
-    // Handle signup logic here
+    try {
+      const payload: any = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        phoneNumber: formData.phoneNumber || undefined,
+        gender: formData.gender || undefined,
+        dateOfBirth: formData.dateOfBirth || undefined,
+        role: formData.role,
+      };
+      if (formData.role === 'CITIZEN') payload.nationalId = formData.nationalId;
+      if (formData.role === 'FOREIGNER') payload.passportNo = formData.passportNo;
+      if (formData.role === 'BUSINESS_OWNER') payload.businessRegNo = formData.businessRegNo;
+
+      const res = await authApi.register(payload);
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      toast({ title: "Success", description: "Account created successfully!" });
+    } catch (err: any) {
+      toast({ title: "Registration failed", description: err.message, variant: "destructive" });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -63,13 +88,21 @@ const SignUp = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label>First Name</Label>
                 <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange("fullName", e.target.value)}
+                  placeholder="Enter your first name"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  required
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Last Name</Label>
+                <Input
+                  placeholder="Enter your last name"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange("lastName", e.target.value)}
                   required
                   className="h-11"
                 />
@@ -100,6 +133,64 @@ const SignUp = () => {
                   className="h-11"
                 />
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Gender</Label>
+                  <select className="h-11 w-full border rounded px-3" value={formData.gender}
+                          onChange={(e) => handleInputChange('gender', e.target.value)}>
+                    <option value="">Select gender (optional)</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Date of Birth</Label>
+                  <Input type="date" value={formData.dateOfBirth}
+                         onChange={(e) => handleInputChange('dateOfBirth', e.target.value)} />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Role</Label>
+                <select className="h-11 w-full border rounded px-3" value={formData.role}
+                        onChange={(e) => handleInputChange('role', e.target.value)}>
+                  <option value="CITIZEN">Citizen</option>
+                  <option value="FOREIGNER">Foreigner</option>
+                  <option value="BUSINESS_OWNER">Business Owner</option>
+                </select>
+              </div>
+
+              {formData.role === 'CITIZEN' && (
+                <div className="space-y-2">
+                  <Label>National ID</Label>
+                  <Input placeholder="Enter national ID"
+                         value={formData.nationalId}
+                         onChange={(e) => handleInputChange('nationalId', e.target.value)}
+                         required />
+                </div>
+              )}
+
+              {formData.role === 'FOREIGNER' && (
+                <div className="space-y-2">
+                  <Label>Passport Number</Label>
+                  <Input placeholder="Enter passport number"
+                         value={formData.passportNo}
+                         onChange={(e) => handleInputChange('passportNo', e.target.value)}
+                         required />
+                </div>
+              )}
+
+              {formData.role === 'BUSINESS_OWNER' && (
+                <div className="space-y-2">
+                  <Label>Business Registration Number</Label>
+                  <Input placeholder="Enter business registration number"
+                         value={formData.businessRegNo}
+                         onChange={(e) => handleInputChange('businessRegNo', e.target.value)}
+                         required />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
