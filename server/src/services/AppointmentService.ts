@@ -4,17 +4,22 @@ import {
   DocumentInfo,
 } from '../models/Appointment';
 import { AppointmentInterface } from './interfaces/AppointmentInterface';
+
 import logger from '../shared/logger';
 import { log } from 'winston';
 import { publishEvent } from '../events/publisher';
 import { DocumentService } from './DocumentService';
 import { Request, Response } from 'express';
 import { sseManager } from '../controllers/SSEController';
+import { UserInterface } from './interfaces/UserInterface';
+import { ServiceInterface } from './interfaces/ServiceInterface';
 
 export class AppointmentService {
   constructor(
     private readonly appointmentInterface: AppointmentInterface,
-    private readonly documentService: DocumentService = new DocumentService()
+    private readonly documentService: DocumentService = new DocumentService(),
+    private readonly userInterface: UserInterface,
+    private readonly serviceInterface: ServiceInterface
   ) {}
 
   async createAppointment(req: Request): Promise<Appointment> {
@@ -32,6 +37,22 @@ export class AppointmentService {
         scheduledAt: new Date(req.body.scheduledAt),
         notes: req.body.notes || undefined,
       };
+
+      //get user email from userId
+      const userId = appointmentData.userId;
+      const user = await this.userInterface.getUserById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const userEmail = user.data.email;
+
+      //get the service booked
+      const serviceId = appointmentData.serviceId;
+      const service = await this.serviceInterface.getServiceById(serviceId);
+      if (!service) {
+        throw new Error('Service not found');
+      }
+      const serviceName = service.name;
 
       let documents: DocumentInfo[] = [];
 
@@ -75,7 +96,8 @@ export class AppointmentService {
         id: created.id,
         userId: created.userId,
         serviceId: created.serviceId,
-        email: 'tharinduimalkajayawardhana@gmail.com',
+        email: userEmail,
+        serviceName: serviceName,
         appointmentDate:
           created.scheduledAt instanceof Date
             ? created.scheduledAt.toISOString()

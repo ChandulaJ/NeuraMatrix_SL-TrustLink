@@ -2,9 +2,15 @@ import { Request, Response } from 'express';
 import { AppointmentService } from '../services/AppointmentService';
 import { PrismaAppointmentInterface } from '../infrastructure/database/interfaces/PrismaAppointmentInterface';
 import logger from '../shared/logger';
+import { PrismaUserInterface } from '../infrastructure/database/interfaces/PrismaUserInterface';
+import { DocumentService } from '../services/DocumentService';
+import { PrismaServiceInterface } from '../infrastructure/database/interfaces/PrismaServiceInterface';
 
 const appointmentService = new AppointmentService(
-  new PrismaAppointmentInterface()
+  new PrismaAppointmentInterface(),
+  new DocumentService(),
+  new PrismaUserInterface(),
+  new PrismaServiceInterface()
 );
 
 export class AppointmentController {

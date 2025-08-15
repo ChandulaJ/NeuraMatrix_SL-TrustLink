@@ -10,7 +10,7 @@ import {
   seedDummyDepartmentsAndServices,
 } from './src/infrastructure/database/seed';
 import logger from './src/shared/logger';
-import { sseRoutes } from './src/routes/SSERoutes';
+import sseRoutes from './src/routes/SSERoutes';
 
 const app = express();
 

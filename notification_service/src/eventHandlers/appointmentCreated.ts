@@ -38,7 +38,7 @@ export async function handleAppointmentCreated(
       'send-24h-reminder',
       { evt },
       {
-        delay: delay, // ms
+        delay: 10000, // ms
         removeOnComplete: 1000,
         removeOnFail: 1000,
         jobId: `reminder:${evt.id}:24h`,

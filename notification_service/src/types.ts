@@ -3,6 +3,8 @@ export type AppointmentCreatedEvent = {
   userId: number;
   appointmentDate: string; // ISO string
   email?: string;
+  serviceId: number;
+  serviceName: string;
 };
 
 export type DomainEventMap = {
@@ -10,3 +12,11 @@ export type DomainEventMap = {
 };
 
 export type DomainEventKey = keyof DomainEventMap;
+
+export type MailOptions = {
+  from: string;
+  to: string;
+  subject: string;
+  text?: string;
+  html?: string;
+};

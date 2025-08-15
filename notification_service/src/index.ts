@@ -45,9 +45,24 @@ function startReminderWorker() {
           userId: number;
           appointmentDate: string;
           email?: string;
+          serviceId: number;
+          serviceName: string;
         };
       };
-      sendEmail(evt.email || '', 'reminder');
+
+      //define the mail
+      const mailOptions = {
+        from: 'SL_TRUST_LINK',
+        to: evt.email || '',
+        subject: '24h Appointment Reminder',
+        text: `You have an upcomming appointment for service ${evt.serviceName} on ${evt.appointmentDate}. Your appointment id is ${evt.id}.
+
+        Please make sure to come on time.`,
+        html: `<p>You have an upcomming appointment for service <b>${evt.serviceName}</b> on <b>${evt.appointmentDate}</b>. Your appointment id is <b>${evt.id}</b>.</p>
+        <p>Please make sure to come on time.</p>`,
+      };
+
+      sendEmail(mailOptions);
       console.log(
         `[Reminder] 24h: user=${evt.userId} appt=${evt.id} date=${evt.appointmentDate} (jobId=${job.id}) to ${evt.email}`
       );
