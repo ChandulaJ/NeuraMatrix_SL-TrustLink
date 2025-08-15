@@ -51,6 +51,7 @@ The system follows a **clean, layered architecture** with clear separation of co
 ## 🛠️ **Tech Stack**
 
 ### **Frontend**
+
 - **React 18** - Modern UI framework
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
@@ -59,6 +60,7 @@ The system follows a **clean, layered architecture** with clear separation of co
 - **Shadcn/ui** - Beautiful UI components
 
 ### **Backend**
+
 - **Node.js** - JavaScript runtime
 - **Express.js** - Web framework
 - **TypeScript** - Type-safe development
@@ -68,10 +70,12 @@ The system follows a **clean, layered architecture** with clear separation of co
 - **Express Validator** - Input validation
 
 ### **Database**
+
 - **MySQL** - Relational database
 - **Prisma** - Database client & migrations
 
 ### **DevOps**
+
 - **Docker** - Containerization
 - **Docker Compose** - Multi-container setup
 
@@ -110,17 +114,20 @@ appointment_service/
 ## 🚀 **Quick Start**
 
 ### **Prerequisites**
-- Node.js 18+ 
+
+- Node.js 18+
 - MySQL 8.0+
 - Docker & Docker Compose (optional)
 
 ### **1. Clone the Repository**
+
 ```bash
 git clone <repository-url>
 cd appointment_service
 ```
 
 ### **2. Backend Setup**
+
 ```bash
 cd Server
 npm install
@@ -130,6 +137,7 @@ npm run dev
 ```
 
 ### **3. Frontend Setup**
+
 ```bash
 cd Presentation
 npm install
@@ -137,6 +145,7 @@ npm run dev
 ```
 
 ### **4. Database Setup**
+
 ```bash
 cd Server
 npx prisma generate
@@ -145,6 +154,7 @@ npx prisma db seed
 ```
 
 ### **5. Using Docker (Alternative)**
+
 ```bash
 docker-compose up -d
 ```
@@ -155,24 +165,25 @@ docker-compose up -d
 
 The system supports multiple user roles with different permissions:
 
-| Role | Description | Permissions |
-|------|-------------|-------------|
-| 👤 **Citizen** | Sri Lankan citizens | Book appointments, View profile |
-| 🌍 **Foreigner** | International users | Book appointments, View profile |
-| 🏢 **Business Owner** | Business entities | Book appointments, View profile |
-| 👑 **Admin** | System administrators | Full system access |
+| Role                  | Description           | Permissions                     |
+| --------------------- | --------------------- | ------------------------------- |
+| 👤 **Citizen**        | Sri Lankan citizens   | Book appointments, View profile |
+| 🌍 **Foreigner**      | International users   | Book appointments, View profile |
+| 🏢 **Business Owner** | Business entities     | Book appointments, View profile |
+| 👑 **Admin**          | System administrators | Full system access              |
 
 ---
 
 ## 📱 **Screenshots**
 
-> *Screenshots will be added here to showcase the UI*
+> _Screenshots will be added here to showcase the UI_
 
 ---
 
 ## 🔌 **API Endpoints**
 
 ### **Authentication**
+
 - `POST /auth/register` - User registration
 - `POST /auth/login` - User login
 - `POST /auth/logout` - User logout
@@ -180,12 +191,14 @@ The system supports multiple user roles with different permissions:
 - `PUT /auth/profile` - Update user profile
 
 ### **Appointments**
+
 - `GET /appointments` - List appointments
 - `POST /appointments` - Create appointment
 - `PUT /appointments/:id` - Update appointment
 - `DELETE /appointments/:id` - Delete appointment
 
 ### **Departments & Services**
+
 - `GET /departments` - List departments
 - `GET /departments/:id/services` - Get department services
 - `GET /services` - List services
@@ -229,6 +242,7 @@ npm test
 ## 🚀 **Deployment**
 
 ### **Production Build**
+
 ```bash
 # Frontend
 cd Presentation
@@ -241,6 +255,7 @@ npm start
 ```
 
 ### **Environment Variables**
+
 ```env
 # Database
 DATABASE_URL="mysql://user:password@localhost:3306/appointments"
@@ -311,4 +326,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 </div>
 
-
+migration - npx prisma migrate dev --schema=src/prisma/schema.prisma
