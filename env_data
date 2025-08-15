@@ -1,11 +1,8 @@
-REDIS_HOST="redis"
-REDIS_PORT="6379"
-APP_PASSWORD=
-APP_EMAIL=
-
 DATABASE_URL="mysql://root:root@localhost:3307/mydb"
 REDIS_HOST="localhost"
+
 # MinIO Configuration
+
 MINIO_ENDPOINT=localhost
 MINIO_PORT=9000
 MINIO_USE_SSL=false
@@ -13,8 +10,8 @@ MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
 MINIO_BUCKET_NAME=appointment-documents
 
-make sure to create a env file with above data
-app_password is passoword from gmail app
-app email is sender email
+# REDIS_HOST="redis"
 
-add above and run the outside docker compose file (before that build the containers of course)
+REDIS_PORT="6379"
+APP_PASSWORD=""
+APP_EMAIL="t"

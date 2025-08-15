@@ -2,7 +2,7 @@ import { Queue } from 'bullmq';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const REDIS_HOST = process.env.REDIS_HOST || 'redis';
+const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 const REDIS_PORT = Number(process.env.REDIS_PORT || 6379);
 
 export const reminderQueue = new Queue('reminders', {

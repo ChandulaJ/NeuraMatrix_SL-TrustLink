@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { MailOptions } from '../types';
+import { MailOptions } from '../services/interfaces/NotificationInterface';
 
 async function sendEmail(mailOptions: MailOptions) {
   try {
