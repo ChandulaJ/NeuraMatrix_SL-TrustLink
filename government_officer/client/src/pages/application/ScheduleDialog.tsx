@@ -27,31 +27,11 @@ export const ScheduleDialog = ({ applicationId, onSuccess }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>(defaultDate);
   const [scheduleTime, setScheduleTime] = useState<string>("09:00");
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [endTime, setEndTime] = useState<string>("");
+  const [endDate, setEndDate] = useState<Date | undefined>(defaultDate);
+  const [endTime, setEndTime] = useState<string>("10:00");
   const [scheduleTitle, setScheduleTitle] = useState<string>("");
   const [creating, setCreating] = useState(false);
   const { toast } = useToast();
-
-  interface AppointmentAcceptResponse {
-    appointmentId: number;
-    accepted: boolean;
-    overlapDetected: boolean;
-    overlaps: unknown[];
-  }
-
-  interface ApproveResponse {
-    status: string;
-    licenseNumber?: string;
-    appointment?: { accepted: boolean; overlapDetected: boolean };
-  }
-
-  const createAdminSchedule = async (start: string, end: string, title: string) => {
-    return Api.post<{ id: number; adminId: number; start: string; end: string; title: string }>(
-      API_SCHEDULE_CREATE,
-      { start, end, title }
-    );
-  };
 
   const handleConfirm = async () => {
     if (!scheduleDate || !scheduleTime || !endDate || !endTime || !scheduleTitle || !applicationId) {
@@ -69,18 +49,19 @@ export const ScheduleDialog = ({ applicationId, onSuccess }: Props) => {
       const ed = new Date(endDate);
       ed.setHours(Number(eh), Number(em), 0, 0);
       const endIso = ed.toISOString();
+  const scheduleRes = (await Api.post(API_SCHEDULE_CREATE, { start: startIso, end: endIso, title: scheduleTitle })) as { id?: number };
 
-      const scheduleRes = await createAdminSchedule(startIso, endIso, scheduleTitle);
+      await Api.post(API_APPLICATION_ACCEPT_APPOINTMENT(String(applicationId)), { scheduledFor: startIso, force: true });
 
-      await Api.post<AppointmentAcceptResponse>(API_APPLICATION_ACCEPT_APPOINTMENT(String(applicationId)), { scheduledFor: startIso, force: true });
+  type ApproveResponse = { status?: string; licenseNumber?: string };
+  const approveRes = (await Api.post(API_APPLICATION_APPROVE(String(applicationId)), { appointment: { scheduledFor: startIso, force: true } })) as ApproveResponse;
 
-      const approveRes = await Api.post<ApproveResponse>(API_APPLICATION_APPROVE(String(applicationId)), { appointment: { scheduledFor: startIso, force: true } });
-
+  const success = approveRes?.status === "APPROVED";
       toast({
-        title: approveRes.status === "APPROVED" ? "Application Approved!" : "Approval Result",
-        description: approveRes.status === "APPROVED"
-          ? `Scheduled ${format(scheduledFor, "PPP")} ${scheduleTime}. Schedule id: ${scheduleRes.id}. License #: ${approveRes.licenseNumber || "-"}`
-          : `Approve returned: ${approveRes.status}`,
+        title: success ? "Application Approved" : "Approval Result",
+        description: success
+          ? `Scheduled ${format(scheduledFor, "PPP")} ${scheduleTime}. Schedule id: ${scheduleRes?.id || "-"}. License #: ${approveRes?.licenseNumber || "-"}`
+          : `Approve returned: ${approveRes?.status || "UNKNOWN"}`,
       });
       setIsOpen(false);
       setCreating(false);
@@ -90,6 +71,18 @@ export const ScheduleDialog = ({ applicationId, onSuccess }: Props) => {
       toast({ title: "Error", description: (err as Error).message || "Failed to schedule/approve.", variant: "destructive" });
     }
   };
+
+  // Keep confirm button disabled if the form is incomplete or start >= end
+  const isFormValid = (() => {
+    if (!scheduleDate || !scheduleTime || !endDate || !endTime || !scheduleTitle) return false;
+    const [sh, sm] = scheduleTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+    const s = new Date(scheduleDate);
+    s.setHours(sh, sm, 0, 0);
+    const e = new Date(endDate);
+    e.setHours(eh, em, 0, 0);
+    return s < e;
+  })();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -127,7 +120,12 @@ export const ScheduleDialog = ({ applicationId, onSuccess }: Props) => {
                       mode="single"
                       selected={scheduleDate}
                       onSelect={(d) => {
-                        setScheduleDate(d as Date);
+                        const ds = d as Date;
+                        setScheduleDate(ds);
+                        // if end date is before start, bump end date to start
+                        if (!endDate || (endDate && ds > endDate)) {
+                          setEndDate(ds);
+                        }
                         (document.activeElement as HTMLElement | null)?.blur?.();
                       }}
                       disabled={(date) => date < new Date()}
@@ -145,7 +143,14 @@ export const ScheduleDialog = ({ applicationId, onSuccess }: Props) => {
                       type="time"
                       value={scheduleTime}
                       onChange={(e) => {
-                        setScheduleTime(e.target.value);
+                        const newTime = e.target.value;
+                        setScheduleTime(newTime);
+                        // auto adjust end time to +1 hour when user changes start
+                        const [h, m] = newTime.split(":").map(Number);
+                        const dt = new Date();
+                        dt.setHours(h + 1, m, 0, 0);
+                        const pad = (n: number) => n.toString().padStart(2, "0");
+                        setEndTime(`${pad(dt.getHours())}:${pad(dt.getMinutes())}`);
                         (e.target as HTMLInputElement).blur();
                       }}
                       className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
@@ -199,7 +204,7 @@ export const ScheduleDialog = ({ applicationId, onSuccess }: Props) => {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button onClick={handleConfirm} className="flex-1 bg-status-approved hover:bg-status-approved/90 text-white" disabled={creating}>{creating ? "Processing..." : "Confirm Schedule"}</Button>
+                <Button onClick={handleConfirm} className="flex-1 bg-status-approved hover:bg-status-approved/90 text-white" disabled={creating || !isFormValid}>{creating ? "Processing..." : "Confirm Schedule"}</Button>
                 <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1" disabled={creating}>Cancel</Button>
               </div>
             </div>
