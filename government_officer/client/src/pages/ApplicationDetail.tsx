@@ -10,25 +10,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// Start time uses native input instead of the Select control
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-
 import { Api } from "@/lib/api";
-import Cookies from "js-cookie";
 import { API_APPLICATION_DETAIL, API_SCHEDULE_CREATE, API_APPLICATION_ACCEPT_APPOINTMENT, API_APPLICATION_APPROVE, API_APPLICATION_REJECT } from "@/lib/api-endpoints";
-
 export const ApplicationDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [scheduleDate, setScheduleDate] = useState<Date>();
-  const [scheduleTime, setScheduleTime] = useState<string>("");
+  // default to tomorrow
+  const defaultDate = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+  const [scheduleDate, setScheduleDate] = useState<Date | undefined>(defaultDate);
+  const [scheduleTime, setScheduleTime] = useState<string>("09:00");
+  const [scheduleTitle, setScheduleTitle] = useState<string>("");
+  // Explicit end date/time fields (visible and required)
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [endTime, setEndTime] = useState<string>("");
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [creatingSchedule, setCreatingSchedule] = useState(false);
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   interface ApiDocument {
     id: number;
     applicationId: number;
@@ -110,12 +119,11 @@ export const ApplicationDetail = () => {
   const fetchApplication = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setErrorDetails(null);
+    const url = API_APPLICATION_DETAIL(String(id));
+    console.log("[ApplicationDetail] fetching", { id, url });
     try {
-      const token = Cookies.get("token");
-  const res = await Api.get<ApiApplication>(
-  API_APPLICATION_DETAIL(String(id)),
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-      );
+      const res = await Api.get<ApiApplication>(url);
       // Map server response to UI fields
       setApplication({
         id: res.id,
@@ -141,15 +149,29 @@ export const ApplicationDetail = () => {
         licenseNumber: res.licenseNumber || "-",
       });
     } catch (err) {
-      setError((err as Error).message || "Failed to load application");
+      const message = (err as Error).message || "Failed to load application";
+      setError(message);
+      try {
+        setErrorDetails(JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+      } catch (e) {
+        setErrorDetails(String(err));
+      }
+      console.error("[ApplicationDetail] fetch error", err);
     } finally {
       setLoading(false);
     }
   }, [id]);
-
+  
+  // Fetch application when the component mounts or when the id changes
   useEffect(() => {
-    if (id) fetchApplication();
-  }, [id, fetchApplication]);
+    if (!id) {
+      setError("Invalid application id");
+      setLoading(false);
+      return;
+    }
+    fetchApplication();
+  }, [fetchApplication, id]);
+  // Do NOT prefill title; let the officer enter it explicitly via advanced options
   
   interface AppointmentAcceptResponse {
     appointmentId: number;
@@ -169,19 +191,17 @@ export const ApplicationDetail = () => {
 
   // Helper to create admin schedule
   const createAdminSchedule = async (start: string, end: string, title: string) => {
-    const token = Cookies.get("token");
     return Api.post<{ id: number; adminId: number; start: string; end: string; title: string }>(
       API_SCHEDULE_CREATE,
-      { start, end, title },
-      token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      { start, end, title }
     );
   };
 
   const handleApproveAndSchedule = async () => {
-    if (!scheduleDate || !scheduleTime || !id) {
+  if (!scheduleDate || !scheduleTime || !endDate || !endTime || !scheduleTitle || !id) {
       toast({
         title: "Missing Information",
-        description: "Please select both date and time for the license minting schedule.",
+    description: "Please select start date/time, end date/time and enter a schedule title.",
         variant: "destructive"
       });
       return;
@@ -189,34 +209,38 @@ export const ApplicationDetail = () => {
 
     try {
       setCreatingSchedule(true);
-      const token = Cookies.get("token");
-      // Combine date and time into ISO string
+  // Api will inject Authorization header from cookie
+      // Combine date and time into ISO string for start, and set end = start + 24 hours
       const [hours, minutes] = scheduleTime.split(":");
       const scheduledFor = new Date(scheduleDate);
       scheduledFor.setHours(Number(hours), Number(minutes), 0, 0);
-      const isoString = scheduledFor.toISOString();
+  const startIso = scheduledFor.toISOString();
 
-      // 0. Create admin schedule
-      await createAdminSchedule(isoString, isoString, `License Minting for Application #${id}`);
+  // compute end ISO from selected endDate + endTime
+  const [eh, em] = endTime.split(":");
+  const ed = new Date(endDate);
+  ed.setHours(Number(eh), Number(em), 0, 0);
+  const endIso = ed.toISOString();
 
-      // 1. Accept appointment
+  // 0. Create admin schedule with title
+  const scheduleRes = await createAdminSchedule(startIso, endIso, scheduleTitle);
+
+  // 1. Accept appointment
       await Api.post<AppointmentAcceptResponse>(
         API_APPLICATION_ACCEPT_APPOINTMENT(String(id)),
-        { scheduledFor: isoString, force: true },
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        { scheduledFor: startIso, force: true }
       );
 
       // 2. Approve application
       const approveRes = await Api.post<ApproveResponse>(
         API_APPLICATION_APPROVE(String(id)),
-        { appointment: { scheduledFor: isoString, force: true } },
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        { appointment: { scheduledFor: startIso, force: true } }
       );
 
       toast({
         title: approveRes.status === "APPROVED" ? "Application Approved!" : "Approval Failed",
         description: approveRes.status === "APPROVED"
-          ? `License minting scheduled for ${format(scheduledFor, "PPP")} at ${scheduleTime}. License #: ${approveRes.licenseNumber || "-"}`
+          ? `License minting scheduled for ${format(scheduledFor, "PPP")} at ${scheduleTime}. Schedule: ${scheduleRes.title || "-"} (id: ${scheduleRes.id}). License #: ${approveRes.licenseNumber || "-"}`
           : "Approval failed or returned unexpected status.",
       });
       setIsScheduleDialogOpen(false);
@@ -236,11 +260,9 @@ export const ApplicationDetail = () => {
   const handleReject = async () => {
     if (!id) return;
     try {
-      const token = Cookies.get("token");
       await Api.post<{ status: string }>(
         API_APPLICATION_REJECT(String(id)),
-        { reason: "Rejected by officer" },
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        { reason: "Rejected by officer" }
       );
       toast({
         title: "Application Rejected",
@@ -288,10 +310,18 @@ export const ApplicationDetail = () => {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-government-800 mb-4">Application Not Found</h2>
           <div className="text-red-500 mb-4">{error}</div>
-          <Button onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Go Back
-          </Button>
+          {errorDetails && (
+            <pre className="text-xs text-left bg-gray-50 p-2 rounded mb-4 max-w-xl mx-auto overflow-auto">{errorDetails}</pre>
+          )}
+          <div className="flex items-center justify-center gap-3">
+            <Button onClick={() => fetchApplication()} className="bg-government-primary">
+              Retry
+            </Button>
+            <Button variant="ghost" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Go Back
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -351,77 +381,131 @@ export const ApplicationDetail = () => {
                     Approve & Schedule License
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <div className="mb-4">
-                    <div className="font-semibold mb-2">Your Schedules</div>
-                    <div className="max-h-[50vh] overflow-auto pr-2">
-                      <AdminScheduleList />
-                    </div>
-                  </div>
+                <DialogContent className="sm:max-w-3xl w-full">
                   <DialogHeader>
                     <DialogTitle className="text-government-800">Schedule License Minting</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-government-700">Select Date</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !scheduleDate && "text-muted-foreground"
-                            )}
-                          >
-                            <Calendar className="mr-2 h-4 w-4" />
-                            {scheduleDate ? format(scheduleDate, "PPP") : "Pick a date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <CalendarComponent
-                            mode="single"
-                            selected={scheduleDate}
-                            onSelect={setScheduleDate}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                            className="p-3 pointer-events-auto"
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
+                    {/* Left: existing schedules */}
+                    <div className="p-2 border border-government-200 rounded-md bg-white">
+                      <div className="font-semibold mb-2">Your Schedules</div>
+                      <div className="max-h-[60vh] overflow-auto pr-2">
+                        <AdminScheduleList />
+                      </div>
+                    </div>
+
+                    {/* Right: new schedule form */}
+                    <div className="p-4 border border-government-200 rounded-md bg-white">
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-government-700">Start Date</label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !scheduleDate && "text-muted-foreground"
+                                )}
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {scheduleDate ? format(scheduleDate, "PPP") : "Pick a date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={scheduleDate}
+                                onSelect={setScheduleDate}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                                className="p-3 pointer-events-auto"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-government-700">Start Time</label>
+                          <div>
+                            <input
+                              type="time"
+                              value={scheduleTime}
+                              onChange={(e) => setScheduleTime(e.target.value)}
+                              className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-government-700">End Date</label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !endDate && "text-muted-foreground"
+                                )}
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {endDate ? format(endDate, "PPP") : "Pick an end date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={endDate}
+                                onSelect={setEndDate}
+                                disabled={(date) => scheduleDate ? date < scheduleDate : date < new Date()}
+                                initialFocus
+                                className="p-3 pointer-events-auto"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-government-700">End Time</label>
+                          <div>
+                            <input
+                              type="time"
+                              value={endTime}
+                              onChange={(e) => setEndTime(e.target.value)}
+                              className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-government-700">Schedule Title</label>
+                          <input
+                            type="text"
+                            value={scheduleTitle}
+                            onChange={(e) => setScheduleTitle(e.target.value)}
+                            placeholder="Enter schedule title"
+                            className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
                           />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-government-700">Select Time</label>
-                      <Select value={scheduleTime} onValueChange={setScheduleTime}>
-                        <SelectTrigger className="w-full">
-                          <Clock className="mr-2 h-4 w-4" />
-                          <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="09:00">09:00 AM</SelectItem>
-                          <SelectItem value="10:00">10:00 AM</SelectItem>
-                          <SelectItem value="11:00">11:00 AM</SelectItem>
-                          <SelectItem value="14:00">02:00 PM</SelectItem>
-                          <SelectItem value="15:00">03:00 PM</SelectItem>
-                          <SelectItem value="16:00">04:00 PM</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex gap-2 pt-4">
-                      <Button 
-                        onClick={handleApproveAndSchedule}
-                        className="flex-1 bg-status-approved hover:bg-status-approved/90 text-white"
-                        disabled={creatingSchedule}
-                      >
-                        {creatingSchedule ? "Processing..." : "Confirm Schedule"}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setIsScheduleDialogOpen(false)}
-                        className="flex-1"
-                        disabled={creatingSchedule}
-                      >
-                        Cancel
-                      </Button>
+                        </div>
+
+                        <div className="flex gap-2 pt-4">
+                          <Button 
+                            onClick={handleApproveAndSchedule}
+                            className="flex-1 bg-status-approved hover:bg-status-approved/90 text-white"
+                            disabled={creatingSchedule}
+                          >
+                            {creatingSchedule ? "Processing..." : "Confirm Schedule"}
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsScheduleDialogOpen(false)}
+                            className="flex-1"
+                            disabled={creatingSchedule}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </DialogContent>

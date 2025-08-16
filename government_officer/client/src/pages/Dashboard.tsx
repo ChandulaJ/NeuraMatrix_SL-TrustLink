@@ -19,7 +19,6 @@ import { useState, useEffect } from "react";
 
 import { Api } from "@/lib/api";
 import * as apiEndpoints from "@/lib/api-endpoints";
-import Cookies from "js-cookie";
 
 export const Dashboard = () => {
   const [summary, setSummary] = useState<{ applicationsAwaitingFinalReview: number; auditsScheduledToday: number; avgApprovalTime30d: number } | null>(null);
@@ -34,11 +33,10 @@ export const Dashboard = () => {
       setLoading(true);
       setError(null);
       try {
-        const token = Cookies.get("token");
         const res = await Api.get<{ applicationsAwaitingFinalReview: number; auditsScheduledToday: number; avgApprovalTime30d: number }>(
-          apiEndpoints.API_REPORT_SUMMARY,
-          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+          apiEndpoints.API_REPORT_SUMMARY
         );
+        // assign fetched summary to state so MetricCard can display real values
         setSummary(res);
       } catch (err) {
         setError((err as Error).message || "Failed to load dashboard summary");
@@ -54,12 +52,9 @@ export const Dashboard = () => {
       setAppLoading(true);
       setAppError(null);
       try {
-        const token = Cookies.get("token");
         const res = await Api.get<ApplicationsApiResponse>(
-          apiEndpoints.API_APPLICATION_LIST,
-          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+          apiEndpoints.API_APPLICATION_LIST
         );
-        // Map API response to Application type
         const mapped: Application[] = res.items.map(app => ({
           id: app.id,
           businessName: app.user?.fullName || app.user?.username || "-",
@@ -99,7 +94,13 @@ export const Dashboard = () => {
         />
         <MetricCard
           title="Average Approval Time (30d)"
-          value={loading ? "-" : summary?.avgApprovalTime30d ? `${summary.avgApprovalTime30d} days` : "-"}
+          value={
+            loading
+              ? "-"
+              : typeof summary?.avgApprovalTime30d === "number"
+              ? `${summary.avgApprovalTime30d.toFixed(2)} days`
+              : "-"
+          }
           subtitle="Demo metric"
           icon={TrendingUp}
           color="orange"

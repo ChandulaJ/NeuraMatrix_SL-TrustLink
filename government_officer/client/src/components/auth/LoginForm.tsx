@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
+import SLTDA_logo from "@/assets/SLTDA_logo.png";
 
 interface LoginFormProps {
   onLogin: (userData: { name: string; role: string }) => void;
@@ -115,28 +116,12 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
         className="flex-1 p-12 flex flex-col justify-center"
       >
         <div className="mb-8">
-          <div className="w-48 h-48 mx-auto mb-8 relative">
-            <div className="w-full h-full rounded-full bg-government-primary flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-2 rounded-full border-4 border-government-700 bg-government-primary flex items-center justify-center">
-                <div className="w-16 h-16 bg-government-700 rounded-sm flex items-center justify-center">
-                  <div className="w-8 h-8 bg-government-primary rounded-sm"></div>
-                </div>
-              </div>
-              {/* Decorative spikes around the circle */}
-              {Array.from({ length: 36 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-6 h-2 bg-government-700"
-                  style={{
-                    transformOrigin: '3px 96px',
-                    transform: `rotate(${i * 10}deg)`,
-                    top: '0px',
-                    left: '50%',
-                    marginLeft: '-3px',
-                  }}
-                />
-              ))}
-            </div>
+          <div className="w-64 h-64 mx-auto mb-8 relative">
+            <img
+              src={SLTDA_logo}
+              alt="SLTDA logo"
+              className="w-64 h-64 rounded-full object-cover mx-auto"
+            />
           </div>
         </div>
         
@@ -165,20 +150,20 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
           className="space-y-4"
         >
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-status-approved flex items-center justify-center">
-              <div className="w-3 h-3 text-white">✓</div>
+            <div className="w-8 h-8 rounded-full bg-status-approved flex items-center justify-center">
+              <span className="text-white text-sm font-semibold leading-none">✓</span>
             </div>
             <span className="text-government-700">Pre-filtered review queue</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-status-approved flex items-center justify-center">
-              <div className="w-3 h-3 text-white">✓</div>
+            <div className="w-8 h-8 rounded-full bg-status-approved flex items-center justify-center">
+              <span className="text-white text-sm font-semibold leading-none">✓</span>
             </div>
             <span className="text-government-700">Consolidated audit reports</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-status-approved flex items-center justify-center">
-              <div className="w-3 h-3 text-white">✓</div>
+            <div className="w-8 h-8 rounded-full bg-status-approved flex items-center justify-center">
+              <span className="text-white text-sm font-semibold leading-none">✓</span>
             </div>
             <span className="text-government-700">Integrity flags & analytics</span>
           </div>

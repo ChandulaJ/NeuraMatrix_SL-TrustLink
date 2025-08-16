@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/lib/api-endpoints";
 import { motion } from "framer-motion";
 import { Api } from "@/lib/api";
-import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -29,10 +28,8 @@ export const IntegrityFlags = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = Cookies.get("token");
       const res = await Api.get<IntegrityFlag[]>(
-        `${API_BASE_URL}/integrity-flags?level=${lvl}`,
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        `${API_BASE_URL}/integrity-flags?level=${lvl}`
       );
       setFlags(res || []);
     } catch (err) {
@@ -48,11 +45,9 @@ export const IntegrityFlags = () => {
 
   const handleResolve = async (id: number) => {
     try {
-      const token = Cookies.get("token");
       const res = await Api.post<IntegrityFlag>(
         `${API_BASE_URL}/integrity-flags/${id}/resolve`,
-        {},
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        {}
       );
       setFlags((prev) => prev.map((f) => (f.id === id ? res : f)));
       toast({ title: "Flag resolved", description: `${res.title} marked as RESOLVED` });

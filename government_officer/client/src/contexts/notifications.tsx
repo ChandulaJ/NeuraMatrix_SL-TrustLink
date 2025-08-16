@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Api } from "@/lib/api";
-import Cookies from "js-cookie";
 import { API_NOTIFICATION_LIST, API_NOTIFICATION_READ } from "@/lib/api-endpoints";
 
 export interface Notification {
@@ -27,8 +26,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchNotifications = async () => {
     try {
-      const token = Cookies.get("token");
-  const res = await Api.get<Notification[]>(API_NOTIFICATION_LIST, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+  const res = await Api.get<Notification[]>(API_NOTIFICATION_LIST);
       setNotifications(res || []);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
@@ -44,8 +42,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   const markAsRead = async (id: number) => {
     try {
-      const token = Cookies.get("token");
-  const res = await Api.post<Notification>(API_NOTIFICATION_READ(String(id)), {}, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+  const res = await Api.post<Notification>(API_NOTIFICATION_READ(String(id)), {});
       setNotifications((prev) => prev.map((n) => (n.id === id ? res : n)));
     } catch (err) {
       console.error("Failed to mark notification read", err);

@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
@@ -28,10 +27,8 @@ export const Applications = () => {
       setLoading(true);
       setError(null);
       try {
-        const token = Cookies.get("token");
         const res = await Api.get<ApiApplication[] | { items: ApiApplication[] }>(
-          API_APPLICATION_LIST,
-          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+          API_APPLICATION_LIST
         );
   const items: ApiApplication[] = Array.isArray(res) ? (res as ApiApplication[]) : ((res as { items?: ApiApplication[] }).items || []);
         // Map API response to table format
