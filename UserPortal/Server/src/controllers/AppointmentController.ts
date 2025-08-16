@@ -1,0 +1,75 @@
+import { Request, Response } from 'express';
+import { AppointmentService } from '../services/AppointmentService';
+import { PrismaAppointmentInterface } from '../infrastructure/database/interfaces/PrismaAppointmentInterface';
+import logger from '../shared/logger';
+import { PrismaUserInterface } from '../infrastructure/database/interfaces/PrismaUserInterface';
+import { DocumentService } from '../services/DocumentService';
+import { PrismaServiceInterface } from '../infrastructure/database/interfaces/PrismaServiceInterface';
+
+const appointmentService = new AppointmentService(
+  new PrismaAppointmentInterface(),
+  new DocumentService(),
+  new PrismaUserInterface(),
+  new PrismaServiceInterface()
+);
+
+export class AppointmentController {
+  static async createAppointment(req: Request, res: Response): Promise<void> {
+    try {
+      const appointment = await appointmentService.createAppointment(req);
+
+      res.status(201).json({
+        success: true,
+        data: appointment,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  static async updateStatus(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const appointment = await appointmentService.updateStatus(
+        Number(id),
+        status
+      );
+      res.status(200).json(appointment);
+    } catch (error) {
+      logger.error(
+        `Failed to update appointment status: ${(error as Error).message}`
+      );
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  static async getUserAppointments(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const appointments = await appointmentService.getUserAppointments(
+        Number(userId)
+      );
+      res.status(200).json(appointments);
+    } catch (error) {
+      logger.error(
+        `Failed to get user appointments: ${(error as Error).message}`
+      );
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  static async deleteAppointment(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      await appointmentService.deleteAppointment(Number(id));
+      res.status(204).send();
+    } catch (error) {
+      logger.error(`Failed to delete appointment: ${(error as Error).message}`);
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
+}
