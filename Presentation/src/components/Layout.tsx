@@ -2,18 +2,20 @@ import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Home, 
-  Building2, 
-  Calendar, 
-  User, 
-  LogOut, 
+import {
+  Home,
+  Building2,
+  Calendar,
+  User,
+  LogOut,
   Shield,
   Menu,
   X
 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import logo from "@/assets/logo.png";
+
 
 interface LayoutProps {
   children: ReactNode;
@@ -51,14 +53,18 @@ export const Layout = ({ children }: LayoutProps) => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img
+                src={logo}
+                alt="User Services"
+                className="w-36 h-24 object-contain"
+              />
               <div>
                 <h1 className="text-lg font-heading font-bold text-foreground">User Services</h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">Unified Portal</p>
               </div>
             </div>
+
+
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1">
@@ -69,11 +75,10 @@ export const Layout = ({ children }: LayoutProps) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     {item.name}
@@ -88,7 +93,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 <Shield className="w-3 h-3 mr-1" />
                 Verified
               </Badge>
-              
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -128,11 +133,10 @@ export const Layout = ({ children }: LayoutProps) => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     {item.name}
