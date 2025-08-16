@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, EyeOff, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authApi, type Role } from "@/services/authApi";
+import logo from "@/assets/logo.png";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,9 +73,11 @@ const SignUp = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
-              <Shield className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img
+              src={logo}
+              alt="User Services"
+              className="w-36 h-24 object-contain"
+            />
           </div>
           <h1 className="text-3xl font-heading font-bold text-foreground">User Portal</h1>
           <p className="text-muted-foreground mt-2">Create your user account</p>
@@ -140,7 +143,7 @@ const SignUp = () => {
                 <div className="space-y-2">
                   <Label>Gender</Label>
                   <select className="h-11 w-full border rounded px-3" value={formData.gender}
-                          onChange={(e) => handleInputChange('gender', e.target.value)}>
+                    onChange={(e) => handleInputChange('gender', e.target.value)}>
                     <option value="">Select gender (optional)</option>
                     <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
@@ -150,14 +153,14 @@ const SignUp = () => {
                 <div className="space-y-2">
                   <Label>Date of Birth</Label>
                   <Input type="date" value={formData.dateOfBirth}
-                         onChange={(e) => handleInputChange('dateOfBirth', e.target.value)} />
+                    onChange={(e) => handleInputChange('dateOfBirth', e.target.value)} />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Role</Label>
                 <select className="h-11 w-full border rounded px-3" value={formData.role}
-                        onChange={(e) => handleInputChange('role', e.target.value)}>
+                  onChange={(e) => handleInputChange('role', e.target.value)}>
                   <option value="CITIZEN">Citizen</option>
                   <option value="FOREIGNER">Foreigner</option>
                   <option value="BUSINESS_OWNER">Business Owner</option>
@@ -168,9 +171,9 @@ const SignUp = () => {
                 <div className="space-y-2">
                   <Label>National ID</Label>
                   <Input placeholder="Enter national ID"
-                         value={formData.nationalId}
-                         onChange={(e) => handleInputChange('nationalId', e.target.value)}
-                         required />
+                    value={formData.nationalId}
+                    onChange={(e) => handleInputChange('nationalId', e.target.value)}
+                    required />
                 </div>
               )}
 
@@ -178,9 +181,9 @@ const SignUp = () => {
                 <div className="space-y-2">
                   <Label>Passport Number</Label>
                   <Input placeholder="Enter passport number"
-                         value={formData.passportNo}
-                         onChange={(e) => handleInputChange('passportNo', e.target.value)}
-                         required />
+                    value={formData.passportNo}
+                    onChange={(e) => handleInputChange('passportNo', e.target.value)}
+                    required />
                 </div>
               )}
 
@@ -188,9 +191,9 @@ const SignUp = () => {
                 <div className="space-y-2">
                   <Label>Business Registration Number</Label>
                   <Input placeholder="Enter business registration number"
-                         value={formData.businessRegNo}
-                         onChange={(e) => handleInputChange('businessRegNo', e.target.value)}
-                         required />
+                    value={formData.businessRegNo}
+                    onChange={(e) => handleInputChange('businessRegNo', e.target.value)}
+                    required />
                 </div>
               )}
 

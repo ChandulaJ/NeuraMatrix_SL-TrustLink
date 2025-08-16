@@ -44,6 +44,15 @@ export async function seedDummyDepartmentsAndServices() {
           category: "Visa",
         },
         {
+          name: "Business Registration",
+          description: "Registration service for businesses in Sri Lanka.",
+          duration: 30, // minutes
+          price: 100.0, // example fee in USD
+          availableSlots: 50,
+          requirements: ["Business Plan", "NIC of Business Owner", "Proof of Address"],
+          category: "Visa",
+        },
+        {
           name: "Tourist Attraction Information",
           description: "Provides information about tourist attractions in Sri Lanka.",
           duration: 5,

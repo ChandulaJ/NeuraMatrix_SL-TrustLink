@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Users, Clock, CheckCircle, Calendar, Building2 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Index = () => {
   const features = [
@@ -41,15 +42,17 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img
+                src={logo}
+                alt="User Services"
+                className="w-36 h-24 object-contain"
+              />
               <div>
-                <h1 className="text-lg font-heading font-bold text-foreground">User Portal</h1>
-                <p className="text-xs text-muted-foreground">Unified Portal</p>
+                <h1 className="text-lg font-heading font-bold text-foreground hidden md:block">User Portal</h1>
+                <p className="text-xs text-muted-foreground hidden md:block">Unified Portal</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Link to="/signin">
                 <Button variant="outline">Sign In</Button>

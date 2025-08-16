@@ -460,7 +460,7 @@ const AppointmentBooking = () => {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">Service Fee</span>
-                    <span className="text-lg font-semibold text-primary">{service.price}</span>
+                    <span className="text-lg font-semibold text-primary">USD {service.price}</span>
                   </div>
                 </div>
               </div>

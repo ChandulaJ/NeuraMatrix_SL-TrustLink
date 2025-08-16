@@ -54,7 +54,6 @@ const Departments = () => {
         {/* Popular Departments */}
         {searchQuery === "" && (
           <div>
-            <h2 className="text-xl font-heading font-semibold mb-4">Popular Departments</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               {departments.filter(dept => dept.popular).map((department) => (
                 <Card key={department.id} className="shadow-card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleViewServices(department.id)}>

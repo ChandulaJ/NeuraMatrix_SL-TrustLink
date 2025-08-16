@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, EyeOff, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authApi } from "@/services/authApi";
+import logo from "@/assets/logo.png";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,9 +40,11 @@ const SignIn = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
-              <Shield className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img
+              src={logo}
+              alt="User Services"
+              className="w-36 h-24 object-contain"
+            />
           </div>
           <h1 className="text-3xl font-heading font-bold text-foreground">User Portal</h1>
           <p className="text-muted-foreground mt-2">Access your user services</p>
@@ -72,8 +75,8 @@ const SignIn = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link 
-                    to="/forgot-password" 
+                  <Link
+                    to="/forgot-password"
                     className="text-sm text-primary hover:underline"
                   >
                     Forgot password?
