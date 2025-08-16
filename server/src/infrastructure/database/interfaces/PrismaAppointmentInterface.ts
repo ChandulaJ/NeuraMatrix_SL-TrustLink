@@ -36,7 +36,9 @@ export class PrismaAppointmentInterface implements AppointmentInterface {
 
   async findByUser(userId: number): Promise<Appointment[]> {
     return prisma.appointment.findMany({
-      where: { userId }, include: {
+      orderBy: { createdAt: 'desc' },
+      where: { userId },
+      include: {
         user: true,
         service: {
           include: {

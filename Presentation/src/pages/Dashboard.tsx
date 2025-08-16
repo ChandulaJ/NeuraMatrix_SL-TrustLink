@@ -81,7 +81,15 @@ const Dashboard = () => {
                     </p>
                   </div>
                   <div className="w-16 h-16 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
-                    <QrCode className="w-8 h-8" />
+                    {latestAppointment.qrcode ? (
+                      <img
+                        src={latestAppointment.qrcode} // your backend URL
+                        alt="Appointment QR Code"
+                        className="w-12 h-12 object-contain"
+                      />
+                    ) : (
+                      <QrCode className="w-8 h-8" />
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
