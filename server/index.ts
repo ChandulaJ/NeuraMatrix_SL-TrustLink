@@ -55,9 +55,8 @@ async function startServer() {
   try {
     // Seed database
     logger.info('Seeding database...');
-    //await seedDummyUser();
-    //await seedDummyDepartmentsAndServices();
-    logger.info('Database seeded successfully');
+    await seedDummyDepartmentsAndServices();
+    //logger.info('Database seeded successfully');
 
     // Start notification service
     logger.info('Starting notification service...');

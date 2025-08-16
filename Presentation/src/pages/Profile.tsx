@@ -16,6 +16,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -26,7 +27,11 @@ const Profile = () => {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token') || '';
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({ title: "Authentication Error", description: "Please login to update your profile", variant: "destructive" });
+        return;
+      }
       const updates = {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
@@ -45,14 +50,21 @@ const Profile = () => {
   useEffect(() => {
     (async () => {
       try {
-        const token = localStorage.getItem('token') || '';
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast({ title: "Authentication Error", description: "Please login to view your profile", variant: "destructive" });
+          return;
+        }
         const user = await authApi.getProfile(token);
         setProfileData(user);
-      } catch (err) {
-        // ignore for now
+      } catch (err: any) {
+        toast({ title: "Error", description: err.message || "Failed to load profile", variant: "destructive" });
+      } finally {
+        setLoading(false);
       }
     })();
-  }, []);
+  }, [toast]);
 
   const handlePasswordUpdate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +89,38 @@ const Profile = () => {
     { action: "Cancelled appointment", service: "Birth Certificate", date: "2024-01-15", status: "cancelled" },
     { action: "Account created", service: "Profile Setup", date: "2023-06-15", status: "completed" }
   ];
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Profile Settings</h1>
+            <p className="text-muted-foreground">Loading your profile...</p>
+          </div>
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <Layout>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Profile Settings</h1>
+            <p className="text-muted-foreground">Unable to load profile data</p>
+          </div>
+          <div className="flex items-center justify-center py-12">
+            <p className="text-muted-foreground">Please try refreshing the page or contact support.</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

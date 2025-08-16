@@ -43,7 +43,7 @@ const SignIn = () => {
               <Shield className="w-6 h-6 text-primary-foreground" />
             </div>
           </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">Government Portal</h1>
+          <h1 className="text-3xl font-heading font-bold text-foreground">User Portal</h1>
           <p className="text-muted-foreground mt-2">Access your citizen services</p>
         </div>
 

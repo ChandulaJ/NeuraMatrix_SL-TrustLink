@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,7 @@ const SignUp = () => {
     businessRegNo: ""
   });
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +57,7 @@ const SignUp = () => {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       toast({ title: "Success", description: "Account created successfully!" });
+      navigate("/dashboard");
     } catch (err: any) {
       toast({ title: "Registration failed", description: err.message, variant: "destructive" });
     }
@@ -74,7 +76,7 @@ const SignUp = () => {
               <Shield className="w-6 h-6 text-primary-foreground" />
             </div>
           </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">Government Portal</h1>
+          <h1 className="text-3xl font-heading font-bold text-foreground">User Portal</h1>
           <p className="text-muted-foreground mt-2">Create your citizen account</p>
         </div>
 
