@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ApplicationsTable, Application as AppType } from "@/components/dashboard/ApplicationsTable";
 import { Api } from "@/lib/api";
 import { API_APPLICATION_LIST } from "@/lib/api-endpoints";
@@ -57,24 +55,9 @@ export const Applications = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mb-6 flex justify-between items-center"
+        className="mb-6"
       >
         <h1 className="text-2xl font-bold text-government-800">All Applications</h1>
-        <div className="flex gap-3">
-          <Button variant="outline" className="border-government-300">
-            All
-          </Button>
-          <Button variant="outline" className="border-government-300">
-            All
-          </Button>
-          <Button variant="outline" className="border-government-300">
-            All
-          </Button>
-          <Button className="bg-government-primary hover:bg-government-primary-light">
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-        </div>
       </motion.div>
       {loading ? (
         <div>Loading...</div>
@@ -82,7 +65,6 @@ export const Applications = () => {
         <div className="text-red-500">{error}</div>
       ) : (
         <ApplicationsTable
-          title=""
           applications={applications}
           showAll={true}
         />

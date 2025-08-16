@@ -84,15 +84,6 @@ export const Reports = () => {
   return (
     <div className="p-6 bg-government-50 min-h-screen">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-government-800">Reports</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">Last 30 days</Button>
-            <Button variant="outline" size="sm">Last 90 days</Button>
-            <Button variant="outline" size="sm">Last 12 months</Button>
-            <Button variant="outline" size="sm">Compare period</Button>
-          </div>
-        </div>
 
         <div className="flex gap-6 text-sm">
           <div><span className="font-medium">Total</span> {avr ? avr.approved + avr.rejected : "-"}</div>

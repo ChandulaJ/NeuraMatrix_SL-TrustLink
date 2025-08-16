@@ -114,7 +114,7 @@ export const Dashboard = () => {
         ) : appError ? (
           <div className="text-red-500">{appError}</div>
         ) : (
-          <ApplicationsTable title="Recent Applications" applications={applications} showAll={false} />
+          <ApplicationsTable applications={applications} showAll={false} />
         )}
       </div>
     </div>
