@@ -4,6 +4,7 @@ const cors = require("cors");
 
 const serviceRoutes = require("./routes/serviceRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes"); // <-- new
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 const app = express();
 app.use(express.json());
@@ -19,6 +20,7 @@ mongoose
 
 app.use("/api/services", serviceRoutes);
 app.use("/api/appointments", appointmentRoutes); // <-- new
+app.use("/api/analytics", analyticsRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () =>

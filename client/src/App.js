@@ -164,15 +164,189 @@
 
 // export default App;
 
+// =======================================
+
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import { Bar, Pie } from "react-chartjs-2";
+// import {
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   ArcElement,
+//   Tooltip,
+//   Legend,
+// } from "chart.js";
+
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   ArcElement,
+//   Tooltip,
+//   Legend
+// );
+
+// function App() {
+//   const [services, setServices] = useState([]);
+
+//   useEffect(() => {
+//     axios
+//       .get("http://localhost:5000/api/appointments/dashboard")
+//       .then((res) => setServices(res.data))
+//       .catch((err) => console.log(err));
+//   }, []);
+
+//   const serviceNames = services.map((s) => s.serviceName);
+//   const totalAppointments = services.map((s) => s.totalAppointments);
+//   const pendingAppointments = services.map((s) => s.pendingAppointments);
+//   const completedAppointments = services.map((s) => s.completedAppointments);
+//   const cancelledAppointments = services.map((s) => s.cancelledAppointments);
+
+//   // Light blue theme colors
+//   const barColors = [
+//     "rgba(135, 206, 250, 0.7)", // light blue
+//     "rgba(173, 216, 230, 0.7)", // lighter blue
+//     "rgba(0, 191, 255, 0.7)", // deeper blue
+//     "rgba(176, 224, 230, 0.7)", // pale blue
+//   ];
+
+//   return (
+//     <div
+//       style={{
+//         padding: "20px",
+//         fontFamily: "Arial, sans-serif",
+//         background: "linear-gradient(to bottom, #e6f0ff, #ffffff)",
+//         minHeight: "100vh",
+//       }}
+//     >
+//       <h1 style={{ textAlign: "center", color: "#1e3a8a" }}>
+//         Government Appointment Dashboard
+//       </h1>
+
+//       {/* Table */}
+//       <table
+//         style={{
+//           width: "100%",
+//           borderCollapse: "collapse",
+//           marginTop: "30px",
+//           backgroundColor: "#f0f8ff",
+//           boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+//         }}
+//       >
+//         <thead>
+//           <tr style={{ backgroundColor: "#b0d4ff", color: "#003366" }}>
+//             <th style={{ padding: "12px", textAlign: "left" }}>Service</th>
+//             <th style={{ padding: "12px", textAlign: "center" }}>Total</th>
+//             <th style={{ padding: "12px", textAlign: "center" }}>Pending</th>
+//             <th style={{ padding: "12px", textAlign: "center" }}>Completed</th>
+//             <th style={{ padding: "12px", textAlign: "center" }}>Cancelled</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {services.map((s, i) => (
+//             <tr
+//               key={i}
+//               style={{
+//                 backgroundColor: i % 2 === 0 ? "#ffffff" : "#e6f2ff",
+//                 color: "#003366",
+//               }}
+//             >
+//               <td style={{ padding: "10px" }}>{s.serviceName}</td>
+//               <td style={{ textAlign: "center" }}>{s.totalAppointments}</td>
+//               <td style={{ textAlign: "center" }}>{s.pendingAppointments}</td>
+//               <td style={{ textAlign: "center" }}>{s.completedAppointments}</td>
+//               <td style={{ textAlign: "center" }}>{s.cancelledAppointments}</td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+
+//       {/* Bar chart container */}
+//       <div style={{ maxWidth: "700px", margin: "40px auto" }}>
+//         <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+//           Total Appointments per Service
+//         </h2>
+//         <Bar
+//           data={{
+//             labels: serviceNames,
+//             datasets: [
+//               {
+//                 label: "Total Appointments",
+//                 data: totalAppointments,
+//                 backgroundColor: barColors[0],
+//               },
+//               {
+//                 label: "Pending",
+//                 data: pendingAppointments,
+//                 backgroundColor: barColors[1],
+//               },
+//               {
+//                 label: "Completed",
+//                 data: completedAppointments,
+//                 backgroundColor: barColors[2],
+//               },
+//               {
+//                 label: "Cancelled",
+//                 data: cancelledAppointments,
+//                 backgroundColor: barColors[3],
+//               },
+//             ],
+//           }}
+//           options={{
+//             responsive: true,
+//             plugins: {
+//               legend: { position: "top" },
+//             },
+//           }}
+//         />
+//       </div>
+
+//       {/* Pie chart container */}
+//       <div style={{ maxWidth: "500px", margin: "40px auto" }}>
+//         <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+//           Overall Appointment Status Distribution
+//         </h2>
+//         <Pie
+//           data={{
+//             labels: ["Pending", "Completed", "Cancelled"],
+//             datasets: [
+//               {
+//                 data: [
+//                   pendingAppointments.reduce((a, b) => a + b, 0),
+//                   completedAppointments.reduce((a, b) => a + b, 0),
+//                   cancelledAppointments.reduce((a, b) => a + b, 0),
+//                 ],
+//                 backgroundColor: ["#add8e6", "#87cefa", "#b0e0e6"],
+//               },
+//             ],
+//           }}
+//           options={{
+//             responsive: true,
+//             plugins: { legend: { position: "bottom" } },
+//           }}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+// =======================================
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar, Pie, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
   ArcElement,
+  PointElement,
+  LineElement,
   Tooltip,
   Legend,
 } from "chart.js";
@@ -182,17 +356,27 @@ ChartJS.register(
   LinearScale,
   BarElement,
   ArcElement,
+  PointElement,
+  LineElement,
   Tooltip,
   Legend
 );
 
 function App() {
   const [services, setServices] = useState([]);
+  const [analytics, setAnalytics] = useState([]);
 
   useEffect(() => {
+    // Fetch services dashboard data
     axios
       .get("http://localhost:5000/api/appointments/dashboard")
       .then((res) => setServices(res.data))
+      .catch((err) => console.log(err));
+
+    // Fetch analytics data
+    axios
+      .get("http://localhost:5000/api/analytics")
+      .then((res) => setAnalytics(res.data))
       .catch((err) => console.log(err));
   }, []);
 
@@ -202,7 +386,7 @@ function App() {
   const completedAppointments = services.map((s) => s.completedAppointments);
   const cancelledAppointments = services.map((s) => s.cancelledAppointments);
 
-  // Light blue theme colors
+  // Colors
   const barColors = [
     "rgba(135, 206, 250, 0.7)", // light blue
     "rgba(173, 216, 230, 0.7)", // lighter blue
@@ -223,7 +407,7 @@ function App() {
         Government Appointment Dashboard
       </h1>
 
-      {/* Table */}
+      {/* Services Table */}
       <table
         style={{
           width: "100%",
@@ -261,7 +445,7 @@ function App() {
         </tbody>
       </table>
 
-      {/* Bar chart container */}
+      {/* Bar Chart for Appointments */}
       <div style={{ maxWidth: "700px", margin: "40px auto" }}>
         <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
           Total Appointments per Service
@@ -301,7 +485,7 @@ function App() {
         />
       </div>
 
-      {/* Pie chart container */}
+      {/* Pie Chart for Status */}
       <div style={{ maxWidth: "500px", margin: "40px auto" }}>
         <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
           Overall Appointment Status Distribution
@@ -326,6 +510,73 @@ function App() {
           }}
         />
       </div>
+
+      {/* === Analytics Charts === */}
+      {analytics.length > 0 && (
+        <>
+          {/* Line Chart - Daily Load */}
+          <div style={{ maxWidth: "800px", margin: "50px auto" }}>
+            <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+              Daily Load Trends
+            </h2>
+            <Line
+              data={{
+                labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+                datasets: analytics.map((a, i) => ({
+                  label: a.serviceName,
+                  data: a.dailyLoad,
+                  borderColor: barColors[i % barColors.length],
+                  backgroundColor: barColors[i % barColors.length],
+                  fill: false,
+                })),
+              }}
+              options={{ responsive: true }}
+            />
+          </div>
+
+          {/* Bar Chart - Avg Processing Time */}
+          <div style={{ maxWidth: "700px", margin: "50px auto" }}>
+            <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+              Average Processing Time (minutes)
+            </h2>
+            <Bar
+              data={{
+                labels: analytics.map((a) => a.serviceName),
+                datasets: [
+                  {
+                    label: "Avg Time",
+                    data: analytics.map((a) => a.avgProcessingTime),
+                    backgroundColor: barColors,
+                  },
+                ],
+              }}
+              options={{ responsive: true }}
+            />
+          </div>
+
+          {/* Pie Chart - No Show Rate */}
+          <div style={{ maxWidth: "500px", margin: "50px auto" }}>
+            <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+              No-Show Rates
+            </h2>
+            <Pie
+              data={{
+                labels: analytics.map((a) => a.serviceName),
+                datasets: [
+                  {
+                    data: analytics.map((a) => a.noShowRate * 100), // convert to %
+                    backgroundColor: barColors,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                plugins: { legend: { position: "bottom" } },
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
