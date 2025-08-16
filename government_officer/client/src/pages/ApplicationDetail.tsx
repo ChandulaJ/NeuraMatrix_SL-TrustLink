@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { AdminScheduleList } from "@/components/dashboard/AdminScheduleList";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Check, X, Calendar, Clock, ArrowLeft } from "lucide-react";
@@ -13,36 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-// Mock data for application details
-const mockApplications: { [key: string]: any } = {
-  "A-1001": {
-    id: "A-1001",
-    businessName: "Anusha's Guesthouse",
-    location: "Mirissa • Southern",
-    owner: "Anusha Perera",
-    address: "23 Beach Rd, Mirissa",
-    phone: "+94 77 123 4567",
-    email: "anusha@example.com",
-    submitted: "7/25/2025, 3:53:08 PM",
-    documents: [
-      { name: "Deed.pdf", url: "#" },
-      { name: "Company_Registration.pdf", url: "#" },
-      { name: "Utility_Bill_1.pdf", url: "#" }
-    ],
-    auditor: "Sanjeewa Fonseka",
-    auditDate: "8/8/2025, 3:53:08 PM",
-    result: "PASSED",
-    checklist: {
-      fireSafety: "Pass",
-      hygiene: "Pass",
-      emergencyExits: "Pass"
-    },
-    notes: "All safety measures verified.",
-    photoEvidence: "photo1.jpg",
-    currentStatus: "Audit Passed",
-    licenseNumber: "-"
-  }
-};
+import { Api } from "@/lib/api";
+import Cookies from "js-cookie";
 
 export const ApplicationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,12 +24,159 @@ export const ApplicationDetail = () => {
   const [scheduleDate, setScheduleDate] = useState<Date>();
   const [scheduleTime, setScheduleTime] = useState<string>("");
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
+  const [creatingSchedule, setCreatingSchedule] = useState(false);
   const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  interface ApiDocument {
+    id: number;
+    applicationId: number;
+    name: string;
+    url: string;
+  }
+
+  interface ApiUser {
+    id: number;
+    fullName?: string;
+    username?: string;
+    email?: string;
+    address?: string;
+    phone?: string;
+  }
+
+  interface ApiAuditReport {
+    auditorName?: string;
+    result?: string;
+    checklist?: {
+      fireSafety?: string;
+      hygiene?: string;
+      emergencyExits?: string;
+    };
+    photoEvidence?: string;
+  }
+
+  interface ApiApplication {
+    id: number;
+    userId: number;
+    serviceId: number;
+    type: string;
+    status: string;
+    scheduledAt?: string;
+    notes?: string;
+    region?: string;
+    locationText?: string;
+    licenseNumber?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+    documents?: ApiDocument[];
+    auditReport?: ApiAuditReport | null;
+    user?: ApiUser;
+  }
+
+  interface UIDocument {
+    name: string;
+    url: string;
+  }
+
+  interface UIAuditChecklist {
+    fireSafety: string;
+    hygiene: string;
+    emergencyExits: string;
+  }
+
+  interface UIApplication {
+    id: number;
+    businessName: string;
+    location: string;
+    owner: string;
+    address: string;
+    phone: string;
+    email: string;
+    submitted: string;
+    documents: UIDocument[];
+    auditor: string;
+    auditDate: string;
+    result: string;
+    checklist: UIAuditChecklist;
+    notes: string;
+    photoEvidence: string;
+    currentStatus: string;
+    licenseNumber: string | null;
+  }
+
+  const [application, setApplication] = useState<UIApplication | null>(null);
+
+  useEffect(() => {
+    const fetchApplication = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = Cookies.get("token");
+        const res = await Api.get<ApiApplication>(
+          `http://localhost:4000/applications/${id}`,
+          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        );
+        // Map server response to UI fields
+        setApplication({
+          id: res.id,
+          businessName: res.user?.fullName || res.user?.username || "-",
+          location: `${res.locationText || "-"} • ${res.region || "-"}`,
+          owner: res.user?.fullName || "-",
+          address: res.user?.address || "-",
+          phone: res.user?.phone || "-",
+          email: res.user?.email || "-",
+          submitted: res.createdAt ? new Date(res.createdAt).toLocaleString() : "-",
+          documents: (res.documents || []).map((doc) => ({ name: doc.name, url: doc.url })),
+          auditor: res.auditReport?.auditorName || "-",
+          auditDate: res.scheduledAt ? new Date(res.scheduledAt).toLocaleString() : "-",
+          result: res.auditReport?.result || "-",
+          checklist: {
+            fireSafety: res.auditReport?.checklist?.fireSafety || "-",
+            hygiene: res.auditReport?.checklist?.hygiene || "-",
+            emergencyExits: res.auditReport?.checklist?.emergencyExits || "-",
+          },
+          notes: res.notes || "-",
+          photoEvidence: res.auditReport?.photoEvidence || "-",
+          currentStatus: res.status ? res.status.charAt(0) + res.status.slice(1).toLowerCase().replace("_", " ") : "-",
+          licenseNumber: res.licenseNumber || "-"
+        });
+      } catch (err) {
+        setError((err as Error).message || "Failed to load application");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchApplication();
+  }, [id]);
   
-  const application = mockApplications[id || ""];
-  
-  const handleApproveAndSchedule = () => {
-    if (!scheduleDate || !scheduleTime) {
+  interface AppointmentAcceptResponse {
+    appointmentId: number;
+    accepted: boolean;
+    overlapDetected: boolean;
+    overlaps: Array<any>;
+  }
+
+  interface ApproveResponse {
+    status: string;
+    licenseNumber?: string;
+    appointment?: {
+      accepted: boolean;
+      overlapDetected: boolean;
+    };
+  }
+
+  // Helper to create admin schedule
+  const createAdminSchedule = async (start: string, end: string, title: string) => {
+    const token = Cookies.get("token");
+    return Api.post<{ id: number; adminId: number; start: string; end: string; title: string }>(
+      "http://localhost:4000/admin-schedule",
+      { start, end, title },
+      token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+    );
+  };
+
+  const handleApproveAndSchedule = async () => {
+    if (!scheduleDate || !scheduleTime || !id) {
       toast({
         title: "Missing Information",
         description: "Please select both date and time for the license minting schedule.",
@@ -65,26 +185,88 @@ export const ApplicationDetail = () => {
       return;
     }
 
-    toast({
-      title: "Application Approved!",
-      description: `License minting scheduled for ${format(scheduleDate, "PPP")} at ${scheduleTime}`,
-    });
-    setIsScheduleDialogOpen(false);
+    try {
+      setCreatingSchedule(true);
+      const token = Cookies.get("token");
+      // Combine date and time into ISO string
+      const [hours, minutes] = scheduleTime.split(":");
+      const scheduledFor = new Date(scheduleDate);
+      scheduledFor.setHours(Number(hours), Number(minutes), 0, 0);
+      const isoString = scheduledFor.toISOString();
+
+      // 0. Create admin schedule
+      await createAdminSchedule(isoString, isoString, `License Minting for Application #${id}`);
+
+      // 1. Accept appointment
+      await Api.post<AppointmentAcceptResponse>(
+        `http://localhost:4000/applications/${id}/appointment/accept`,
+        { scheduledFor: isoString, force: true },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+
+      // 2. Approve application
+      const approveRes = await Api.post<ApproveResponse>(
+        `http://localhost:4000/applications/${id}/approve`,
+        { appointment: { scheduledFor: isoString, force: true } },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+
+      toast({
+        title: approveRes.status === "APPROVED" ? "Application Approved!" : "Approval Failed",
+        description: approveRes.status === "APPROVED"
+          ? `License minting scheduled for ${format(scheduledFor, "PPP")} at ${scheduleTime}. License #: ${approveRes.licenseNumber || "-"}`
+          : "Approval failed or returned unexpected status.",
+      });
+      setIsScheduleDialogOpen(false);
+      setCreatingSchedule(false);
+      // Optionally update UI or refetch application
+    } catch (err) {
+      setCreatingSchedule(false);
+      toast({
+        title: "Error",
+        description: (err as Error).message || "Failed to approve application.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleReject = () => {
-    toast({
-      title: "Application Rejected",
-      description: "The application has been rejected and the applicant will be notified.",
-      variant: "destructive"
-    });
+  const handleReject = async () => {
+    if (!id) return;
+    try {
+      const token = Cookies.get("token");
+      await Api.post<{ status: string }>(
+        `http://localhost:4000/applications/${id}/reject`,
+        { reason: "Rejected by officer" },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+      toast({
+        title: "Application Rejected",
+        description: "The application has been rejected and the applicant will be notified.",
+        variant: "destructive"
+      });
+      // Optionally update UI or refetch application
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: (err as Error).message || "Failed to reject application.",
+        variant: "destructive"
+      });
+    }
   };
 
-  if (!application) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-government-50 flex items-center justify-center">
+        <div className="text-center text-government-700">Loading...</div>
+      </div>
+    );
+  }
+  if (error || !application) {
     return (
       <div className="min-h-screen bg-government-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-government-800 mb-4">Application Not Found</h2>
+          <div className="text-red-500 mb-4">{error}</div>
           <Button onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Go Back
@@ -149,6 +331,10 @@ export const ApplicationDetail = () => {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
+                  <div className="mb-4">
+                    <div className="font-semibold mb-2">Your Schedules</div>
+                    <AdminScheduleList />
+                  </div>
                   <DialogHeader>
                     <DialogTitle className="text-government-800">Schedule License Minting</DialogTitle>
                   </DialogHeader>
@@ -201,13 +387,15 @@ export const ApplicationDetail = () => {
                       <Button 
                         onClick={handleApproveAndSchedule}
                         className="flex-1 bg-status-approved hover:bg-status-approved/90 text-white"
+                        disabled={creatingSchedule}
                       >
-                        Confirm Schedule
+                        {creatingSchedule ? "Processing..." : "Confirm Schedule"}
                       </Button>
                       <Button 
                         variant="outline" 
                         onClick={() => setIsScheduleDialogOpen(false)}
                         className="flex-1"
+                        disabled={creatingSchedule}
                       >
                         Cancel
                       </Button>
@@ -263,7 +451,7 @@ export const ApplicationDetail = () => {
                 <div>
                   <label className="font-medium text-government-700 block mb-2">Documents:</label>
                   <ul className="space-y-2">
-                    {application.documents.map((doc: any, index: number) => (
+                    {application.documents.map((doc, index) => (
                       <li key={index}>
                         <a
                           href={doc.url}

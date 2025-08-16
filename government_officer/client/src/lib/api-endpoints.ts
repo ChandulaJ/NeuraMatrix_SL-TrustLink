@@ -24,7 +24,7 @@ export const API_NOTIFICATION_LIST = `${API_BASE_URL}/notification`;
 export const API_NOTIFICATION_READ = (id: string) => `${API_BASE_URL}/notification/${id}/read`;
 
 // Report
-export const API_REPORT_SUMMARY = `${API_BASE_URL}/report/summary`;
+export const API_REPORT_SUMMARY = `${API_BASE_URL}/reports/summary`;
 export const API_REPORT_APPROVALS_VS_REJECTIONS = `${API_BASE_URL}/report/approvals-vs-rejections`;
 export const API_REPORT_AUDITOR_PERFORMANCE = `${API_BASE_URL}/report/auditor-performance`;
 export const API_REPORT_STATUS_BREAKDOWN = `${API_BASE_URL}/report/status-breakdown`;
