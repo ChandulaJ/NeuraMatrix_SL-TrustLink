@@ -208,6 +208,7 @@ router.post('/:id/audit-report', requireAuth, requireRole('AUDITOR', 'ADMIN'), a
     const id = Number(req.params.id);
     const app = await prisma.application.findUnique({ where: { id } });
     if (!app) return res.status(404).json({ error: 'NOT_FOUND' });
+    const payloadChecklist = JSON.stringify(req.body.checklist);
 
     const upserted = await prisma.auditReport.upsert({
       where: { applicationId: id },
@@ -218,7 +219,7 @@ router.post('/:id/audit-report', requireAuth, requireRole('AUDITOR', 'ADMIN'), a
         result: req.body.result,
         notes: req.body.notes,
         photoEvidenceUrl: req.body.photoEvidenceUrl,
-  checklist: JSON.stringify(req.body.checklist)
+        checklist: payloadChecklist,
       },
       update: {
         auditorId: req.user!.id,
@@ -226,7 +227,7 @@ router.post('/:id/audit-report', requireAuth, requireRole('AUDITOR', 'ADMIN'), a
         result: req.body.result,
         notes: req.body.notes,
         photoEvidenceUrl: req.body.photoEvidenceUrl,
-  checklist: JSON.stringify(req.body.checklist)
+        checklist: payloadChecklist,
       }
     });
 
@@ -234,7 +235,8 @@ router.post('/:id/audit-report', requireAuth, requireRole('AUDITOR', 'ADMIN'), a
       await prisma.application.update({ where: { id }, data: { status: 'AUDIT_PASSED' } });
     }
 
-    res.json(upserted);
+    const returned = { ...upserted, checklist: JSON.parse(upserted.checklist) };
+    res.json(returned);
   } catch (e) { next(e); }
 });
 

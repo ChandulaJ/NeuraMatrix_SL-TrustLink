@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── NEW: permissions "enum" as strings via join table ─────────────────────────
+model UserPermission {
+  userId     Int
+  permission String
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, permission])
+}
+
+// ─── CHANGE: extend User with profile fields + relation to permissions ─────────
 model User {
   id           Int       @id @default(autoincrement())
   fullName     String
@@ -18,12 +28,24 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  // Profile fields (all optional, align with UI)
+  phoneNumber  String?
+  title        String?     // e.g., "Senior Inspector"
+  department   String?
+  location     String?     // e.g., "Colombo District"
+  bio          String?
+  employeeCode String?     @unique
+
   schedules        AdminSchedule[]
   auditReports     AuditReport[] @relation("AuditReportsByAuditor")
   notifications    Notification[]
   applications     Application[]
   appointmentsMade Appointment[] @relation("AppointmentsByAdmin")
+
+  // NEW relation
+  permissions      UserPermission[]
 }
+
 
 model Service {
   id   Int    @id @default(autoincrement())

@@ -8,7 +8,7 @@ export const openapiSpec = {
       "Use **Authorize** with `Bearer <JWT>` (admin/auditor).",
     contact: { name: "Backend Team" }
   },
-  servers: [{ url: "http://localhost:4000", description: "Local dev" }],
+  servers: [{ url: "https://glowing-halibut-4665p97w576cj6x-4000.app.github.dev", description: "Local dev" }],
   tags: [
     { name: "Auth" },
     { name: "Applications" },
@@ -16,6 +16,7 @@ export const openapiSpec = {
     { name: "Reports" },
     { name: "Integrity Flags" },
     { name: "Notifications" },
+    { name: "Profile" },
     { name: "System" }
   ],
   components: {
@@ -47,6 +48,41 @@ export const openapiSpec = {
           email: { type: "string", format: "email" },
           password: { type: "string", minLength: 6 },
           role: { type: "string", enum: ["ADMIN", "AUDITOR"] }
+        }
+      },
+
+      UserProfile: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          code: { type: "string", example: "U-002" },
+          fullName: { type: "string" },
+          title: { type: "string", nullable: true },
+          email: { type: "string", format: "email" },
+          phoneNumber: { type: "string", nullable: true },
+          role: { type: "string", enum: ["ADMIN", "AUDITOR"] },
+          department: { type: "string", nullable: true },
+          location: { type: "string", nullable: true },
+          bio: { type: "string", nullable: true },
+          joinedAt: { type: "string", format: "date-time" },
+          permissions: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { key: { type: "string" }, label: { type: "string" } }
+            }
+          }
+        }
+      },
+      UpdateProfileRequest: {
+        type: "object",
+        properties: {
+          fullName: { type: "string" },
+          phoneNumber: { type: "string" },
+          title: { type: "string" },
+          department: { type: "string" },
+          location: { type: "string" },
+          bio: { type: "string" }
         }
       },
 
@@ -278,6 +314,32 @@ export const openapiSpec = {
         },
         responses: { "200": { description: "Created" } },
         security: []
+      }
+    },
+
+    "/me": {
+      get: {
+        tags: ["Profile"],
+        summary: "Get my profile",
+        responses: {
+          "200": { description: "OK", content: { "application/json": { schema: { $ref: "#/components/schemas/UserProfile" } } } }
+        }
+      },
+      patch: {
+        tags: ["Profile"],
+        summary: "Update my profile",
+        requestBody: {
+          required: true,
+          content: { "application/json": { schema: { $ref: "#/components/schemas/UpdateProfileRequest" } } }
+        },
+        responses: { "200": { description: "OK", content: { "application/json": { schema: { $ref: "#/components/schemas/UserProfile" } } } } }
+      }
+    },
+    "/me/permissions": {
+      get: {
+        tags: ["Profile"],
+        summary: "List my permissions",
+        responses: { "200": { description: "OK" } }
       }
     },
 

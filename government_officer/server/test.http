@@ -195,3 +195,29 @@ Authorization: Bearer {{adminToken}}
 @firstNotifId = {{my_notifications.response.body.$.[0].id}}
 POST {{base}}/notifications/{{firstNotifId}}/read
 Authorization: Bearer {{adminToken}}
+
+############################################################
+# Profile
+############################################################
+
+### Get my profile (admin)
+GET {{base}}/me
+Authorization: Bearer {{adminToken}}
+
+### Update my profile (admin)
+PATCH {{base}}/me
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Rohan Perera",
+  "phoneNumber": "+94 77 111 2222",
+  "title": "System Administrator",
+  "department": "Tourism Development Authority",
+  "location": "Head Office",
+  "bio": "Admin user for SLTDA portal (updated)."
+}
+
+### List my permissions
+GET {{base}}/me/permissions
+Authorization: Bearer {{adminToken}}
