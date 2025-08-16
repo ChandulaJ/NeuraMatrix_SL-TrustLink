@@ -14,19 +14,19 @@ export interface Application {
 }
 
 interface ApplicationsTableProps {
-  title: string;
   applications: Application[];
   showAll?: boolean;
 }
 
-export const ApplicationsTable = ({ title, applications, showAll = false }: ApplicationsTableProps) => {
+export const ApplicationsTable = ({ applications, showAll = false }: ApplicationsTableProps) => {
   const navigate = useNavigate();
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved": return "bg-status-approved text-white";
-      case "rejected": return "bg-status-rejected text-white";
-      case "pending": return "bg-status-pending text-white";
-      case "audit-passed": return "bg-status-audit-passed text-white";
+  // use lighter background colors with darker text for subtler chips
+  case "approved": return "bg-green-200 text-green-800";
+  case "rejected": return "bg-red-200 text-red-800";
+  case "pending": return "bg-yellow-200 text-yellow-800";
+  case "audit-passed": return "bg-green-200 text-green-800";
       default: return "bg-government-300 text-government-800";
     }
   };
@@ -47,9 +47,6 @@ export const ApplicationsTable = ({ title, applications, showAll = false }: Appl
       transition={{ duration: 0.4 }}
       className="bg-white rounded-lg border border-government-200 overflow-hidden"
     >
-      <div className="p-6 border-b border-government-200">
-        <h2 className="text-xl font-semibold text-government-800">{title}</h2>
-      </div>
       
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -100,7 +97,9 @@ export const ApplicationsTable = ({ title, applications, showAll = false }: Appl
                 <td className="px-6 py-4 text-government-900">{application.auditor}</td>
                 {showAll && (
                   <td className="px-6 py-4">
-                    <Badge className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(application.status)}`}>
+                    <Badge
+                      className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getStatusColor(application.status)} bg-opacity-25`}
+                    >
                       {getStatusText(application.status)}
                     </Badge>
                   </td>
