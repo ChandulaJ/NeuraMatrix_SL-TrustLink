@@ -59,7 +59,7 @@ const MyAppointments = () => {
 
   const handleCancelAppointment = async (appointmentId: number) => {
     try {
-      await appointmentApi.updateStatus(appointmentId, 'CANCELLED');
+      await appointmentApi.delete(appointmentId);
       toast({
         title: "Appointment Cancelled",
         description: "Your appointment has been cancelled successfully.",
