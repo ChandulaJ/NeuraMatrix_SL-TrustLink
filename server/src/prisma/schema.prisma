@@ -70,10 +70,20 @@ model Appointment {
   status       AppointmentStatus
   scheduledAt  DateTime
   notes        String?
-  reference   String
+  reference    String
+  qrcode       String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   documents    Json?
+  documentsRelation  Documents[] @relation("AppointmentDocs")
+}
+
+model Documents {
+  id             Int          @id @default(autoincrement())
+  appointment    Appointment  @relation("AppointmentDocs", fields: [appointmentId], references: [id])
+  appointmentId  Int
+  name           String?
+  url            String?
 }
 
 enum Role {

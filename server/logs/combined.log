@@ -147,3 +147,200 @@
 {"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 02:11:47"}
 {"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 02:11:47"}
 {"level":"info","message":"Server started on port 3000","timestamp":"2025-08-16 02:11:47"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 02:15:20"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 02:15:20"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 02:15:20"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 02:15:20"}
+{"level":"info","message":"Server started on port 3000","timestamp":"2025-08-16 02:15:29"}
+{"level":"info","message":"QR code sent to WhatsApp for user 2","timestamp":"2025-08-16 02:16:23"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 13:29:51"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 13:29:51"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 13:29:51"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 13:29:51"}
+{"level":"info","message":"Server started on port 3000","timestamp":"2025-08-16 13:30:11"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 13:34:00"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 13:34:00"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 13:34:00"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 13:34:00"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 13:34:00"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 13:34:00"}
+{"level":"error","message":"Protocol error (Runtime.callFunctionOn): Execution context was destroyed.","name":"ProtocolError","originalMessage":"Execution context was destroyed.","stack":"ProtocolError: Protocol error (Runtime.callFunctionOn): Execution context was destroyed.\n    at D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\node_modules\\puppeteer-core\\src\\common\\Connection.ts:400:16\n    at new Promise (<anonymous>)\n    at CDPSessionImpl.send (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\node_modules\\puppeteer-core\\src\\common\\Connection.ts:396:12)\n    at ExecutionContext._ExecutionContext_evaluate (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\node_modules\\puppeteer-core\\src\\common\\ExecutionContext.ts:274:44)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async ExecutionContext.evaluate (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\node_modules\\puppeteer-core\\src\\common\\ExecutionContext.ts:137:12)","timestamp":"2025-08-16 13:34:23"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 13:36:16"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 13:36:16"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 13:36:16"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 13:36:16"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 13:36:16"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 13:36:16"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 13:36:25"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 13:51:20"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 13:51:20"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 13:51:20"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 13:51:20"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 13:51:20"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 13:51:20"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 13:51:36"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 13:52:33"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 13:52:33"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 13:52:33"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 13:52:33"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 13:52:33"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 13:52:33"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 13:52:42"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 14:15:38"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 14:15:38"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 14:15:38"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 14:15:39"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 14:15:39"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 14:15:39"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 14:15:56"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 14:37:54"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 14:37:54"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 14:37:54"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 14:37:54"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 14:37:54"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 14:37:54"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 14:38:05"}
+{"dateOfBirth":"2025-08-16","email":"dinukpkcc@gmail.com","firstName":"dinuk","gender":"MALE","lastName":"pathiraja","level":"info","message":"Registration Body:","nationalId":"9913219421","password":"12345678","phoneNumber":"0711570452","role":"CITIZEN","timestamp":"2025-08-16 14:38:55"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:02:16"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:02:16"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:02:16"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:02:16"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:02:16"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:02:16"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:02:28"}
+{"dateOfBirth":"2025-08-16","email":"dinukpkcc@gmail.com","firstName":"dinuk","gender":"MALE","lastName":"pathiraja","level":"info","message":"Registration Body:","nationalId":"9913219422","password":"12345678","phoneNumber":"0711570452","role":"CITIZEN","timestamp":"2025-08-16 16:03:35"}
+{"level":"error","message":"Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:35:31\n\n  32 }\n  33 \n  34 async findByUser(userId: number): Promise<Appointment[]> {\n→ 35   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true,\n               documents: true,\n               ~~~~~~~~~\n       ?       appointments?: true\n             }\n           }\n         }\n       })\n\nUnknown field `documents` for include statement on model `Service`. Available options are marked with ?.","timestamp":"2025-08-16 16:03:59"}
+{"level":"error","message":"Failed to get user appointments: Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:35:31\n\n  32 }\n  33 \n  34 async findByUser(userId: number): Promise<Appointment[]> {\n→ 35   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true,\n               documents: true,\n               ~~~~~~~~~\n       ?       appointments?: true\n             }\n           }\n         }\n       })\n\nUnknown field `documents` for include statement on model `Service`. Available options are marked with ?.","timestamp":"2025-08-16 16:03:59"}
+{"level":"error","message":"Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:35:31\n\n  32 }\n  33 \n  34 async findByUser(userId: number): Promise<Appointment[]> {\n→ 35   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true,\n               documents: true,\n               ~~~~~~~~~\n       ?       appointments?: true\n             }\n           }\n         }\n       })\n\nUnknown field `documents` for include statement on model `Service`. Available options are marked with ?.","timestamp":"2025-08-16 16:06:10"}
+{"level":"error","message":"Failed to get user appointments: Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:35:31\n\n  32 }\n  33 \n  34 async findByUser(userId: number): Promise<Appointment[]> {\n→ 35   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true,\n               documents: true,\n               ~~~~~~~~~\n       ?       appointments?: true\n             }\n           }\n         }\n       })\n\nUnknown field `documents` for include statement on model `Service`. Available options are marked with ?.","timestamp":"2025-08-16 16:06:10"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:09:48"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:09:48"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:09:48"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:09:48"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:09:48"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:09:48"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:09:59"}
+{"level":"error","message":"Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:38:31\n\n  35 }\n  36 \n  37 async findByUser(userId: number): Promise<Appointment[]> {\n→ 38   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true\n             }\n           },\n           documents: true,\n           ~~~~~~~~~\n       ?   user?: true,\n       ?   service?: true,\n       ?   documentsRelation?: true\n         }\n       })\n\nInvalid scalar field `documents` for include statement on model Appointment. Available options are marked with ?.\nNote that include statements only accept relation fields.","timestamp":"2025-08-16 16:10:35"}
+{"level":"error","message":"Failed to get user appointments: Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:38:31\n\n  35 }\n  36 \n  37 async findByUser(userId: number): Promise<Appointment[]> {\n→ 38   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true\n             }\n           },\n           documents: true,\n           ~~~~~~~~~\n       ?   user?: true,\n       ?   service?: true,\n       ?   documentsRelation?: true\n         }\n       })\n\nInvalid scalar field `documents` for include statement on model Appointment. Available options are marked with ?.\nNote that include statements only accept relation fields.","timestamp":"2025-08-16 16:10:35"}
+{"level":"error","message":"Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:38:31\n\n  35 }\n  36 \n  37 async findByUser(userId: number): Promise<Appointment[]> {\n→ 38   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true\n             }\n           },\n           documents: true,\n           ~~~~~~~~~\n       ?   user?: true,\n       ?   service?: true,\n       ?   documentsRelation?: true\n         }\n       })\n\nInvalid scalar field `documents` for include statement on model Appointment. Available options are marked with ?.\nNote that include statements only accept relation fields.","timestamp":"2025-08-16 16:11:02"}
+{"level":"error","message":"Failed to get user appointments: Failed to get user appointments: \nInvalid `prisma.appointment.findMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:38:31\n\n  35 }\n  36 \n  37 async findByUser(userId: number): Promise<Appointment[]> {\n→ 38   return prisma.appointment.findMany({\n         where: {\n           userId: 1\n         },\n         include: {\n           user: true,\n           service: {\n             include: {\n               department: true\n             }\n           },\n           documents: true,\n           ~~~~~~~~~\n       ?   user?: true,\n       ?   service?: true,\n       ?   documentsRelation?: true\n         }\n       })\n\nInvalid scalar field `documents` for include statement on model Appointment. Available options are marked with ?.\nNote that include statements only accept relation fields.","timestamp":"2025-08-16 16:11:02"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:17:02"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:17:02"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:17:02"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:17:02"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:17:02"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:17:02"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:17:14"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:20:30"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:20:30"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:20:30"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:20:30"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:20:30"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:20:30"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:20:39"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:26:01"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:26:01"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:26:01"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:26:01"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:26:01"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:26:01"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:26:10"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:30:19"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:30:19"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:30:19"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:30:19"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:30:19"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:30:19"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:30:28"}
+{"dateOfBirth":"2025-08-25","email":"chathuryaprasad@gmail.com","firstName":"Chathurya","gender":"MALE","lastName":"Prasad","level":"info","message":"Registration Body:","nationalId":"9912325641","password":"12345678","phoneNumber":"0702672689","role":"CITIZEN","timestamp":"2025-08-16 16:31:07"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"1\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T03:30:32.338Z\",\"reference\":\"APP-1-121452\",\"notes\":\"need to meet in person\"}","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":1,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T03:30:32.338Z\",\"reference\":\"APP-1-121452\",\"notes\":\"need to meet in person\"}","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"User found: chathuryaprasad@gmail.com","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Looking up service with ID: 1","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Service found: Tourist Visa Issuance","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"File names: [\"Black and Red Business Application Letter.jpg\",\"Black and Red Business Application Letter.jpg\",\"Black and Red Business Application Letter.jpg\"]","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 16:32:01"}
+{"level":"error","message":"Failed to create appointment: \nInvalid `prisma.appointment.create()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:8:31\n\n  5 \n  6 export class PrismaAppointmentInterface implements AppointmentInterface {\n  7   async create(appointment: Appointment): Promise<Appointment> {\n→ 8     return prisma.appointment.create({\n          data: {\n            userId: 1,\n            serviceId: 1,\n            type: \"IN_PERSON\",\n            status: \"PENDING\",\n            scheduledAt: new Date(\"2025-08-16T03:30:32.338Z\"),\n            reference: \"APP-1-121452\",\n            notes: \"need to meet in person\",\n            documents: [\n              {\n                name: \"Black and Red Business Application Letter.jpg\",\n                url: \"http://localhost:9000/appointment-documents/user_1/Black and Red Business Application Letter.jpg_1755342121554.jpg\"\n              },\n              {\n                name: \"Black and Red Business Application Letter.jpg\",\n                url: \"http://localhost:9000/appointment-documents/user_1/Black and Red Business Application Letter.jpg_1755342121555.jpg\"\n              },\n              {\n                name: \"Black and Red Business Application Letter.jpg\",\n                url: \"http://localhost:9000/appointment-documents/user_1/Black and Red Business Application Letter.jpg_1755342121555.jpg\"\n              }\n            ],\n            createdAt: new Date(\"2025-08-16T11:02:01.642Z\"),\n            updatedAt: new Date(\"2025-08-16T11:02:01.642Z\"),\n        +   qrcode: String\n          }\n        })\n\nArgument `qrcode` is missing.","timestamp":"2025-08-16 16:32:01"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:36:37"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:36:38"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:36:38"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:36:38"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:36:38"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:36:38"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:36:47"}
+{"dateOfBirth":"2025-08-14","email":"dinukpkcc@gmail.com","firstName":"dinuk","gender":"MALE","lastName":"pathiraja","level":"info","message":"Registration Body:","nationalId":"9913219425","password":"12345678","phoneNumber":"0702672689","role":"CITIZEN","timestamp":"2025-08-16 16:37:41"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"1\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:17.472Z\",\"reference\":\"APP-1-520429\",\"notes\":\"ned to meet in person\"}","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":1,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:17.472Z\",\"reference\":\"APP-1-520429\",\"notes\":\"ned to meet in person\"}","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Looking up service with ID: 1","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Service found: Tourist Visa Issuance","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"File names: [\"Black and Red Business Application Letter.jpg\",\"Black and Red Business Application Letter.jpg\",\"Black and Red Business Application Letter.jpg\"]","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 16:38:40"}
+{"level":"error","message":"Failed to create appointment: \nInvalid `prisma.documents.createMany()` invocation in\nD:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\infrastructure\\database\\interfaces\\PrismaAppointmentInterface.ts:85:49\n\n  82 const appointment = await prisma.appointment.findUnique({ where: { id: appointmentId } });\n  83 if (!appointment) throw new Error('Appointment not found');\n  84 \n→ 85 const newDocuments = await prisma.documents.createMany({\n       data: [\n         {\n           name: \"Black and Red Business Application Letter.jpg\",\n           url: \"http://localhost:9000/appointment-documents/user_1/Black and Red Business Application Letter.jpg_1755342520513.jpg\",\n           appointmentId: 1,\n           appointment: {\n             connect: {\n               id: 1\n             }\n           }\n         },\n         {\n           name: \"Black and Red Business Application Letter.jpg\",\n           url: \"http://localhost:9000/appointment-documents/user_1/Black and Red Business Application Letter.jpg_1755342520514.jpg\",\n           appointmentId: 1,\n           appointment: {\n             connect: {\n               id: 1\n             }\n           }\n         },\n         {\n           name: \"Black and Red Business Application Letter.jpg\",\n           url: \"http://localhost:9000/appointment-documents/user_1/Black and Red Business Application Letter.jpg_1755342520515.jpg\",\n           appointmentId: 1,\n           appointment: {\n             connect: {\n               id: 1\n             }\n           }\n         }\n       ]\n     })\n\nUnknown argument `appointment`. Did you mean `appointmentId`? Available options are marked with ?.","timestamp":"2025-08-16 16:38:40"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:42:36"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:42:36"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:42:36"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:42:36"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:42:36"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:42:36"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:42:44"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"1\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:17.472Z\",\"reference\":\"APP-1-770220\",\"notes\":\"ned to meet in person\"}","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":1,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:17.472Z\",\"reference\":\"APP-1-770220\",\"notes\":\"ned to meet in person\"}","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Looking up service with ID: 1","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Service found: Tourist Visa Issuance","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"File names: [\"Black and Red Business Application Letter.jpg\",\"Black and Red Business Application Letter.jpg\",\"Black and Red Business Application Letter.jpg\"]","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 16:42:50"}
+{"level":"error","message":"Document upload failed: File not found at path: /tmp/qr_code_1755342770526.png","timestamp":"2025-08-16 16:42:50"}
+{"level":"error","message":"Qr uploadning Error: Document upload failed: File not found at path: /tmp/qr_code_1755342770526.png","stack":"Error: Document upload failed: File not found at path: /tmp/qr_code_1755342770526.png\n    at DocumentService.<anonymous> (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\services\\DocumentService.ts:98:13)\n    at Generator.next (<anonymous>)\n    at D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\services\\DocumentService.ts:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\services\\DocumentService.ts:4:12)\n    at DocumentService.uploadDocument (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\services\\DocumentService.ts:60:16)\n    at AppointmentService.<anonymous> (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\services\\AppointmentService.ts:168:51)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Competition\\RootCode\\2nd_round\\appointment_service\\Server\\src\\services\\AppointmentService.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-08-16 16:42:50"}
+{"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 16:42:52"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 16:49:12"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 16:49:12"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 16:49:12"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 16:49:12"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 16:49:12"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 16:49:12"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 16:49:21"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"4\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:02.002Z\",\"reference\":\"APP-4-222336\",\"notes\":\"No\"}","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":4,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:02.002Z\",\"reference\":\"APP-4-222336\",\"notes\":\"No\"}","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Looking up service with ID: 4","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Service found: National Identity Card Issuance","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"File names: [\"Black and Red Business Application Letter.jpg\",\"ChatGPT Image Aug 12, 2025, 08_00_38 PM.png\",\"Black and Red Business Application Letter.jpg\"]","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 16:50:22"}
+{"level":"error","message":"Failed to create appointment: ENOENT: no such file or directory, open 'D:\\tmp\\qr_code_1755343222643.png'","timestamp":"2025-08-16 16:50:22"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 17:00:51"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 17:00:51"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 17:00:51"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 17:00:51"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 17:00:51"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 17:00:51"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 17:01:02"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"4\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:02.002Z\",\"reference\":\"APP-4-866342\",\"notes\":\"No\"}","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":4,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:02.002Z\",\"reference\":\"APP-4-866342\",\"notes\":\"No\"}","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Looking up service with ID: 4","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Service found: National Identity Card Issuance","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"File names: [\"Black and Red Business Application Letter.jpg\",\"ChatGPT Image Aug 12, 2025, 08_00_38 PM.png\",\"Black and Red Business Application Letter.jpg\"]","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 17:01:06"}
+{"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 17:01:08"}

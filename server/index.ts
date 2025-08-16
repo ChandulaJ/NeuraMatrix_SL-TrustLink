@@ -63,17 +63,15 @@ async function startServer() {
     logger.info('Starting notification service...');
     await notificationService.start();
     logger.info('Notification service started successfully');
-
-    // Initialize WhatsApp client
-    await initializeWhatsApp();
     // Start HTTP server
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
-      console.log(
-        `SSE endpoint: http://localhost:${PORT}/events/admin/appointments`
-      );
-      logger.info(`Server started on port ${PORT}`);
+    app.listen(PORT, async () => {
+      logger.info(`Server started on http://localhost:${PORT}`);
+      logger.info(`Health check: http://localhost:${PORT}/health`);
+
+      // Fire off WhatsApp init in the background
+      initializeWhatsApp()
+        .then(() => logger.info('WhatsApp client initialized'))
+        .catch((err) => logger.error('WhatsApp init failed', err));
     });
   } catch (error) {
     logger.error('Error during server startup:', error);

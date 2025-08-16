@@ -10,11 +10,21 @@ export interface Appointment {
   scheduledAt: Date;
   notes?: string;
   reference: string;
+  documents?: DocumentInfo[];
+  qrcode?: string;
   createdAt: Date;
   updatedAt: Date;
-  documents?: DocumentInfo[];
   service?: Service;
   user?: User;
+  documentsRelation?: Documents[];
+}
+
+export interface Documents{
+  id: number;
+  appointmentId: number;
+  name: string;
+  url: string;
+  appointment: Appointment;
 }
 
 export interface DocumentInfo {

@@ -4,7 +4,6 @@ import {
   DocumentInfo,
 } from '../models/Appointment';
 import { AppointmentInterface } from './interfaces/AppointmentInterface';
-
 import logger from '../shared/logger';
 import { log } from 'winston';
 import { publishEvent } from '../events/publisher';
@@ -14,7 +13,10 @@ import { sseManager } from '../controllers/SSEController';
 import { UserInterface } from './interfaces/UserInterface';
 import { ServiceInterface } from './interfaces/ServiceInterface';
 import qrcode from 'qrcode-terminal';
+import QRCode from 'qrcode';
 import { sendQRCode } from './WhatsappService';
+import fs from 'fs/promises';
+import path from 'path';
 
 export class AppointmentService {
   constructor(
@@ -22,18 +24,18 @@ export class AppointmentService {
     private readonly documentService: DocumentService = new DocumentService(),
     private readonly userInterface: UserInterface,
     private readonly serviceInterface: ServiceInterface
-  ) {}
+  ) { }
 
   async createAppointment(req: Request): Promise<Appointment> {
     try {
       logger.info('Starting appointment creation...');
       logger.info(`Request body: ${JSON.stringify(req.body)}`);
-      
+
       // Extract uploaded files safely
       const files = Array.isArray(req.files)
         ? (req.files as Express.Multer.File[])
         : [];
-      
+
       logger.info(`Number of files uploaded: ${files.length}`);
 
       // Prepare appointment data with type conversions
@@ -45,7 +47,7 @@ export class AppointmentService {
         notes: req.body.notes || undefined,
         reference: req.body.reference,
       };
-      
+
       logger.info(`Appointment data prepared: ${JSON.stringify(appointmentData)}`);
 
       //get user email from userId
@@ -78,7 +80,7 @@ export class AppointmentService {
         logger.info(`Starting document upload for ${files.length} files`);
         const fileNames = files.map((file) => file.originalname);
         logger.info(`File names: ${JSON.stringify(fileNames)}`);
-        
+
         try {
           documents = await this.documentService.uploadMultipleDocuments(
             files,
@@ -101,6 +103,9 @@ export class AppointmentService {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+
+      // add documents
+      const addedDocuments = await this.appointmentInterface.addMultipleDocuments(created.id, documents);
 
       sseManager.broadcast('appointment.created', {
         appointment: {
@@ -142,7 +147,47 @@ export class AppointmentService {
       }, null, 2);
 
       // Display QR code in terminal (for debugging)
-      const qrCode = qrcode.generate(qrCodeData);
+      const qrImage = qrcode.generate(qrCodeData);
+
+      // Generate QR code as image buffer
+      const qrImageBuffer = await QRCode.toBuffer(qrCodeData, { type: 'png' });
+      // Create a fake Express.Multer.File object for the QR code image
+      const tempDir = path.join(__dirname, '../shared/temp');
+
+      // Ensure the folder exists
+      await fs.mkdir(tempDir, { recursive: true });
+
+      // Generate QR file path
+      const qrFilePath = path.join(tempDir, `qr_code_${Date.now()}.png`);
+      await fs.writeFile(qrFilePath, qrImageBuffer);
+
+      const qrCodeFile: Express.Multer.File = {
+        fieldname: 'qr_code',
+        originalname: 'qr_code.png',
+        encoding: '7bit',
+        mimetype: 'image/png',
+        size: qrImageBuffer.length,
+        buffer: qrImageBuffer,
+        destination: tempDir,
+        filename: path.basename(qrFilePath),
+        path: qrFilePath,
+        stream: undefined as any,
+      };
+
+
+      try {
+        const qrFile = await this.documentService.uploadDocument(qrCodeFile, `qr_code`, created.userId);
+        // update appointment with QR code document
+        await this.appointmentInterface.update(
+          {
+            id: created.id,
+            qrcode: qrFile.url
+          }
+        );
+      }
+      catch (error) {
+        logger.error("Qr uploadning Error:", error);
+      }
 
       // Send QR code via WhatsApp if user has phone number
       if (userPhoneNumber) {
