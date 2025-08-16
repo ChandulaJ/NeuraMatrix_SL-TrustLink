@@ -11,6 +11,7 @@ import flagRoutes from './routes/flag.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import { errorHandler } from './middlewares/error.js';
 import swaggerUi from 'swagger-ui-express';
+import profileRoutes from './routes/profile.routes.js';
 import { openapiSpec } from './docs/openapi.js';
 
 export const app = express();
@@ -44,6 +45,7 @@ app.get('/docs.json', (_req, res) => res.json(openapiSpec));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.use('/auth', authRoutes);
+app.use('/me', profileRoutes);
 app.use('/applications', applicationRoutes);
 app.use('/admin-schedule', scheduleRoutes);
 app.use('/reports', reportRoutes);
