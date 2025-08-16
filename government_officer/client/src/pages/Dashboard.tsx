@@ -36,6 +36,8 @@ export const Dashboard = () => {
         const res = await Api.get<{ applicationsAwaitingFinalReview: number; auditsScheduledToday: number; avgApprovalTime30d: number }>(
           apiEndpoints.API_REPORT_SUMMARY
         );
+        // assign fetched summary to state so MetricCard can display real values
+        setSummary(res);
       } catch (err) {
         setError((err as Error).message || "Failed to load dashboard summary");
       } finally {
@@ -92,7 +94,13 @@ export const Dashboard = () => {
         />
         <MetricCard
           title="Average Approval Time (30d)"
-          value={loading ? "-" : summary?.avgApprovalTime30d ? `${summary.avgApprovalTime30d} days` : "-"}
+          value={
+            loading
+              ? "-"
+              : typeof summary?.avgApprovalTime30d === "number"
+              ? `${summary.avgApprovalTime30d.toFixed(2)} days`
+              : "-"
+          }
           subtitle="Demo metric"
           icon={TrendingUp}
           color="orange"
