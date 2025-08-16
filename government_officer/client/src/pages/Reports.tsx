@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { Api } from "@/lib/api";
-import Cookies from "js-cookie";
 import { useToast } from "@/hooks/use-toast";
 import { API_REPORT_APPROVALS_VS_REJECTIONS, API_REPORT_AUDITOR_PERFORMANCE, API_REPORT_STATUS_BREAKDOWN } from "@/lib/api-endpoints";
 
@@ -51,12 +50,11 @@ export const Reports = () => {
       setLoading(true);
       setError(null);
       try {
-        const token = Cookies.get("token");
-        const [avrRes, perfRes, statusRes] = await Promise.all([
-            Api.get<ApprovalsVsRejections>(API_REPORT_APPROVALS_VS_REJECTIONS, token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
-            Api.get<AuditorPerformanceItem[]>(API_REPORT_AUDITOR_PERFORMANCE, token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
-            Api.get<StatusBreakdown>(API_REPORT_STATUS_BREAKDOWN, token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
-        ]);
+    const [avrRes, perfRes, statusRes] = await Promise.all([
+      Api.get<ApprovalsVsRejections>(API_REPORT_APPROVALS_VS_REJECTIONS),
+      Api.get<AuditorPerformanceItem[]>(API_REPORT_AUDITOR_PERFORMANCE),
+      Api.get<StatusBreakdown>(API_REPORT_STATUS_BREAKDOWN),
+    ]);
         setAvr(avrRes);
         setAuditorPerf(perfRes);
         setStatusBreakdown(statusRes);

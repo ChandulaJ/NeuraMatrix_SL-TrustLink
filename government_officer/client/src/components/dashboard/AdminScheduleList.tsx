@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Api } from "@/lib/api";
-import Cookies from "js-cookie";
 import { API_SCHEDULE_MY, API_SCHEDULE_DELETE } from "@/lib/api-endpoints";
 
 export interface AdminScheduleItem {
@@ -25,11 +24,7 @@ export const AdminScheduleList = ({ onDelete }: AdminScheduleListProps) => {
       setLoading(true);
       setError(null);
       try {
-        const token = Cookies.get("token");
-        const res = await Api.get<AdminScheduleItem[]>(
-          API_SCHEDULE_MY,
-          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-        );
+        const res = await Api.get<AdminScheduleItem[]>(API_SCHEDULE_MY);
         setSchedules(res);
       } catch (err) {
         setError((err as Error).message || "Failed to load schedules");
@@ -42,11 +37,7 @@ export const AdminScheduleList = ({ onDelete }: AdminScheduleListProps) => {
 
   const handleDelete = async (id: number) => {
     try {
-      const token = Cookies.get("token");
-      await Api.delete<{ ok: boolean }>(
-        API_SCHEDULE_DELETE(String(id)),
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-      );
+  await Api.delete<{ ok: boolean }>(API_SCHEDULE_DELETE(String(id)));
       setSchedules((prev) => prev.filter((item) => item.id !== id));
       if (onDelete) onDelete(id);
     } catch (err) {

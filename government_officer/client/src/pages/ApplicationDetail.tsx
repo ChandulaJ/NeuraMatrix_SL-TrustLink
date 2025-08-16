@@ -15,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 import { Api } from "@/lib/api";
-import Cookies from "js-cookie";
 import { API_APPLICATION_DETAIL, API_SCHEDULE_CREATE, API_APPLICATION_ACCEPT_APPOINTMENT, API_APPLICATION_APPROVE, API_APPLICATION_REJECT } from "@/lib/api-endpoints";
 
 export const ApplicationDetail = () => {
@@ -111,10 +110,8 @@ export const ApplicationDetail = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = Cookies.get("token");
-  const res = await Api.get<ApiApplication>(
-  API_APPLICATION_DETAIL(String(id)),
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      const res = await Api.get<ApiApplication>(
+        API_APPLICATION_DETAIL(String(id))
       );
       // Map server response to UI fields
       setApplication({
@@ -169,11 +166,9 @@ export const ApplicationDetail = () => {
 
   // Helper to create admin schedule
   const createAdminSchedule = async (start: string, end: string, title: string) => {
-    const token = Cookies.get("token");
     return Api.post<{ id: number; adminId: number; start: string; end: string; title: string }>(
       API_SCHEDULE_CREATE,
-      { start, end, title },
-      token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      { start, end, title }
     );
   };
 
@@ -189,7 +184,7 @@ export const ApplicationDetail = () => {
 
     try {
       setCreatingSchedule(true);
-      const token = Cookies.get("token");
+  // Api will inject Authorization header from cookie
       // Combine date and time into ISO string
       const [hours, minutes] = scheduleTime.split(":");
       const scheduledFor = new Date(scheduleDate);
@@ -202,15 +197,13 @@ export const ApplicationDetail = () => {
       // 1. Accept appointment
       await Api.post<AppointmentAcceptResponse>(
         API_APPLICATION_ACCEPT_APPOINTMENT(String(id)),
-        { scheduledFor: isoString, force: true },
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        { scheduledFor: isoString, force: true }
       );
 
       // 2. Approve application
       const approveRes = await Api.post<ApproveResponse>(
         API_APPLICATION_APPROVE(String(id)),
-        { appointment: { scheduledFor: isoString, force: true } },
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        { appointment: { scheduledFor: isoString, force: true } }
       );
 
       toast({
@@ -236,11 +229,9 @@ export const ApplicationDetail = () => {
   const handleReject = async () => {
     if (!id) return;
     try {
-      const token = Cookies.get("token");
       await Api.post<{ status: string }>(
         API_APPLICATION_REJECT(String(id)),
-        { reason: "Rejected by officer" },
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+        { reason: "Rejected by officer" }
       );
       toast({
         title: "Application Rejected",
