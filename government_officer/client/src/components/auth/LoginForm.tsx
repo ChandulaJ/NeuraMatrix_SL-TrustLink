@@ -86,7 +86,12 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
       return;
     }
     try {
-      const res = await Api.post<any>(
+      type RegisterResponse = {
+        fullName?: string;
+        username?: string;
+        role?: string;
+      };
+      const res = await Api.post<RegisterResponse>(
         apiEndpoints.API_AUTH_REGISTER,
         {
           fullName,

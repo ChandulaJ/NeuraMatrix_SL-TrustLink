@@ -2,14 +2,15 @@ import { AdminScheduleList } from "@/components/dashboard/AdminScheduleList";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, Check, X, Calendar, Clock, ArrowLeft } from "lucide-react";
+import { Search, X, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+// schedule dialog moved to its own component
+import { ApplicantSubmission } from "./application/ApplicantSubmission";
+import { AuditorReport } from "./application/AuditorReport";
+import { StatusCard } from "./application/StatusCard";
+import { ScheduleDialog } from "./application/ScheduleDialog";
+import type { ApiApplication, UIApplication } from "./application/types";
 // Start time uses native input instead of the Select control
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -19,101 +20,11 @@ export const ApplicationDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  // default to tomorrow
-  const defaultDate = (() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  })();
-  const [scheduleDate, setScheduleDate] = useState<Date | undefined>(defaultDate);
-  const [scheduleTime, setScheduleTime] = useState<string>("09:00");
-  const [scheduleTitle, setScheduleTitle] = useState<string>("");
-  // Explicit end date/time fields (visible and required)
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [endTime, setEndTime] = useState<string>("");
-  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
-  const [creatingSchedule, setCreatingSchedule] = useState(false);
+  // schedule UI moved to ScheduleDialog component
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
-  interface ApiDocument {
-    id: number;
-    applicationId: number;
-    name: string;
-    url: string;
-  }
-
-  interface ApiUser {
-    id: number;
-    fullName?: string;
-    username?: string;
-    email?: string;
-    address?: string;
-    phone?: string;
-  }
-
-  interface ApiAuditReport {
-    auditorName?: string;
-    result?: string;
-    checklist?: {
-      fireSafety?: string;
-      hygiene?: string;
-      emergencyExits?: string;
-    };
-    photoEvidence?: string;
-  }
-
-  interface ApiApplication {
-    id: number;
-    userId: number;
-    serviceId: number;
-    type: string;
-    status: string;
-    scheduledAt?: string;
-    notes?: string;
-    region?: string;
-    locationText?: string;
-    licenseNumber?: string | null;
-    createdAt?: string;
-    updatedAt?: string;
-    documents?: ApiDocument[];
-    auditReport?: ApiAuditReport | null;
-    user?: ApiUser;
-  }
-
-  interface UIDocument {
-    name: string;
-    url: string;
-  }
-
-  interface UIAuditChecklist {
-    fireSafety: string;
-    hygiene: string;
-    emergencyExits: string;
-  }
-
-  interface UIApplication {
-    id: number;
-    businessName: string;
-    location: string;
-    owner: string;
-    address: string;
-    phone: string;
-    email: string;
-    submitted: string;
-    documents: UIDocument[];
-    auditor: string;
-    auditDate: string;
-    result: string;
-    checklist: UIAuditChecklist;
-    notes: string;
-    photoEvidence: string;
-    currentStatus: string;
-    licenseNumber: string | null;
-  }
-
   const [application, setApplication] = useState<UIApplication | null>(null);
 
   const fetchApplication = useCallback(async () => {
@@ -189,73 +100,7 @@ export const ApplicationDetail = () => {
     };
   }
 
-  // Helper to create admin schedule
-  const createAdminSchedule = async (start: string, end: string, title: string) => {
-    return Api.post<{ id: number; adminId: number; start: string; end: string; title: string }>(
-      API_SCHEDULE_CREATE,
-      { start, end, title }
-    );
-  };
-
-  const handleApproveAndSchedule = async () => {
-  if (!scheduleDate || !scheduleTime || !endDate || !endTime || !scheduleTitle || !id) {
-      toast({
-        title: "Missing Information",
-    description: "Please select start date/time, end date/time and enter a schedule title.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      setCreatingSchedule(true);
-  // Api will inject Authorization header from cookie
-      // Combine date and time into ISO string for start, and set end = start + 24 hours
-      const [hours, minutes] = scheduleTime.split(":");
-      const scheduledFor = new Date(scheduleDate);
-      scheduledFor.setHours(Number(hours), Number(minutes), 0, 0);
-  const startIso = scheduledFor.toISOString();
-
-  // compute end ISO from selected endDate + endTime
-  const [eh, em] = endTime.split(":");
-  const ed = new Date(endDate);
-  ed.setHours(Number(eh), Number(em), 0, 0);
-  const endIso = ed.toISOString();
-
-  // 0. Create admin schedule with title
-  const scheduleRes = await createAdminSchedule(startIso, endIso, scheduleTitle);
-
-  // 1. Accept appointment
-      await Api.post<AppointmentAcceptResponse>(
-        API_APPLICATION_ACCEPT_APPOINTMENT(String(id)),
-        { scheduledFor: startIso, force: true }
-      );
-
-      // 2. Approve application
-      const approveRes = await Api.post<ApproveResponse>(
-        API_APPLICATION_APPROVE(String(id)),
-        { appointment: { scheduledFor: startIso, force: true } }
-      );
-
-      toast({
-        title: approveRes.status === "APPROVED" ? "Application Approved!" : "Approval Failed",
-        description: approveRes.status === "APPROVED"
-          ? `License minting scheduled for ${format(scheduledFor, "PPP")} at ${scheduleTime}. Schedule: ${scheduleRes.title || "-"} (id: ${scheduleRes.id}). License #: ${approveRes.licenseNumber || "-"}`
-          : "Approval failed or returned unexpected status.",
-      });
-      setIsScheduleDialogOpen(false);
-      setCreatingSchedule(false);
-  // Refresh application to reflect new status and license
-  await fetchApplication();
-    } catch (err) {
-      setCreatingSchedule(false);
-      toast({
-        title: "Error",
-        description: (err as Error).message || "Failed to approve application.",
-        variant: "destructive"
-      });
-    }
-  };
+  // schedule actions handled inside ScheduleDialog
 
   const handleReject = async () => {
     if (!id) return;
@@ -277,23 +122,6 @@ export const ApplicationDetail = () => {
         description: (err as Error).message || "Failed to reject application.",
         variant: "destructive"
       });
-    }
-  };
-
-  const getStatusBadgeClass = (status: string) => {
-    const s = status?.toLowerCase?.() || "";
-    switch (s) {
-      case "approved":
-        return "ml-2 bg-status-approved text-white";
-      case "rejected":
-        return "ml-2 bg-status-rejected text-white";
-      case "pending":
-        return "ml-2 bg-status-pending text-white";
-      case "audit passed":
-      case "audit-passed":
-        return "ml-2 bg-status-audit-passed text-white";
-      default:
-        return "ml-2 bg-government-300 text-government-800";
     }
   };
 
@@ -374,142 +202,7 @@ export const ApplicationDetail = () => {
               </p>
             </div>
             <div className="flex gap-3">
-              <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-status-approved hover:bg-status-approved/90 text-white">
-                    <Check className="h-4 w-4 mr-2" />
-                    Approve & Schedule License
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-3xl w-full">
-                  <DialogHeader>
-                    <DialogTitle className="text-government-800">Schedule License Minting</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
-                    {/* Left: existing schedules */}
-                    <div className="p-2 border border-government-200 rounded-md bg-white">
-                      <div className="font-semibold mb-2">Your Schedules</div>
-                      <div className="max-h-[60vh] overflow-auto pr-2">
-                        <AdminScheduleList />
-                      </div>
-                    </div>
-
-                    {/* Right: new schedule form */}
-                    <div className="p-4 border border-government-200 rounded-md bg-white">
-                      <div className="space-y-3">
-                        <div>
-                          <label className="text-sm font-medium text-government-700">Start Date</label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full justify-start text-left font-normal",
-                                  !scheduleDate && "text-muted-foreground"
-                                )}
-                              >
-                                <Calendar className="mr-2 h-4 w-4" />
-                                {scheduleDate ? format(scheduleDate, "PPP") : "Pick a date"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarComponent
-                                mode="single"
-                                selected={scheduleDate}
-                                onSelect={setScheduleDate}
-                                disabled={(date) => date < new Date()}
-                                initialFocus
-                                className="p-3 pointer-events-auto"
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-government-700">Start Time</label>
-                          <div>
-                            <input
-                              type="time"
-                              value={scheduleTime}
-                              onChange={(e) => setScheduleTime(e.target.value)}
-                              className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-government-700">End Date</label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full justify-start text-left font-normal",
-                                  !endDate && "text-muted-foreground"
-                                )}
-                              >
-                                <Calendar className="mr-2 h-4 w-4" />
-                                {endDate ? format(endDate, "PPP") : "Pick an end date"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarComponent
-                                mode="single"
-                                selected={endDate}
-                                onSelect={setEndDate}
-                                disabled={(date) => scheduleDate ? date < scheduleDate : date < new Date()}
-                                initialFocus
-                                className="p-3 pointer-events-auto"
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-government-700">End Time</label>
-                          <div>
-                            <input
-                              type="time"
-                              value={endTime}
-                              onChange={(e) => setEndTime(e.target.value)}
-                              className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-government-700">Schedule Title</label>
-                          <input
-                            type="text"
-                            value={scheduleTitle}
-                            onChange={(e) => setScheduleTitle(e.target.value)}
-                            placeholder="Enter schedule title"
-                            className="w-full px-3 py-2 border border-government-300 rounded-md text-sm"
-                          />
-                        </div>
-
-                        <div className="flex gap-2 pt-4">
-                          <Button 
-                            onClick={handleApproveAndSchedule}
-                            className="flex-1 bg-status-approved hover:bg-status-approved/90 text-white"
-                            disabled={creatingSchedule}
-                          >
-                            {creatingSchedule ? "Processing..." : "Confirm Schedule"}
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => setIsScheduleDialogOpen(false)}
-                            className="flex-1"
-                            disabled={creatingSchedule}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <ScheduleDialog applicationId={id} onSuccess={fetchApplication} />
               
               <Button 
                 onClick={handleReject}
@@ -522,145 +215,18 @@ export const ApplicationDetail = () => {
           </div>
         </motion.div>
 
-        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Applicant Submission */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-government-800">Applicant Submission</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="font-medium text-government-700">Owner:</label>
-                  <p className="text-government-900">{application.owner}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Address:</label>
-                  <p className="text-government-900">{application.address}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Phone:</label>
-                  <p className="text-government-900">{application.phone}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Email:</label>
-                  <p className="text-government-900">{application.email}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Submitted:</label>
-                  <p className="text-government-900">{application.submitted}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700 block mb-2">Documents:</label>
-                  <ul className="space-y-2">
-                    {application.documents.map((doc, index) => (
-                      <li key={index}>
-                        <a
-                          href={doc.url}
-                          className="text-government-primary hover:text-government-primary-light underline"
-                        >
-                          {doc.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+            <ApplicantSubmission application={application} />
           </motion.div>
 
-          {/* Auditor's Report */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-government-800">Auditor's Report</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="font-medium text-government-700">Auditor:</label>
-                  <p className="text-government-900">{application.auditor}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Audit Date:</label>
-                  <p className="text-government-900">{application.auditDate}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Result:</label>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-status-approved" />
-                    <span className="font-medium text-status-approved">{application.result}</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700 block mb-2">Checklist (read-only):</label>
-                  <ul className="space-y-2">
-                    <li className="flex justify-between">
-                      <span>Fire Safety:</span>
-                      <Badge className="bg-status-approved text-white text-xs">
-                        {application.checklist.fireSafety}
-                      </Badge>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>Hygiene:</span>
-                      <Badge className="bg-status-approved text-white text-xs">
-                        {application.checklist.hygiene}
-                      </Badge>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>Emergency Exits:</span>
-                      <Badge className="bg-status-approved text-white text-xs">
-                        {application.checklist.emergencyExits}
-                      </Badge>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Notes:</label>
-                  <p className="text-government-900">{application.notes}</p>
-                </div>
-                <div>
-                  <label className="font-medium text-government-700">Photo Evidence:</label>
-                  <p className="text-government-900">{application.photoEvidence}</p>
-                </div>
-              </CardContent>
-            </Card>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
+            <AuditorReport application={application} />
           </motion.div>
         </div>
 
-        {/* Status Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-government-800">Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div>
-                  <label className="font-medium text-government-700">Current Status:</label>
-                  <Badge className={getStatusBadgeClass(application.currentStatus)}>
-                    {application.currentStatus}
-                  </Badge>
-                </div>
-              </div>
-              <div>
-                <label className="font-medium text-government-700">License #:</label>
-                <span className="ml-2 text-government-900">{application.licenseNumber}</span>
-              </div>
-            </CardContent>
-          </Card>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
+          <StatusCard application={application} />
         </motion.div>
       </div>
     </div>
