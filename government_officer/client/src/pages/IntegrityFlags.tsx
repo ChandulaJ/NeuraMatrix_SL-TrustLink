@@ -1,28 +1,66 @@
+import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/api-endpoints";
 import { motion } from "framer-motion";
-import { AlertTriangle, Eye } from "lucide-react";
+import { Api } from "@/lib/api";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const integrityFlags = [
-  {
-    id: 1,
-    type: "Volume Spike",
-    description: "Unusual application volume from a single owner: Volume Spike Owner (3 in 30 days)",
-    severity: "High" as const,
-    icon: "🔺",
-    color: "bg-red-100 text-red-800 border-red-200"
-  },
-  {
-    id: 2, 
-    type: "Applicant Pattern",
-    description: "Applicant with multiple recent rejections: Rejected Place 0 (2)",
-    severity: "Low" as const,
-    icon: "😟",
-    color: "bg-orange-100 text-orange-800 border-orange-200"
-  }
-];
+interface IntegrityFlag {
+  id: number;
+  level: string;
+  title: string;
+  description: string;
+  status: "OPEN" | "RESOLVED" | string;
+  createdAt: string;
+}
 
 export const IntegrityFlags = () => {
+  const [level, setLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
+  const [flags, setFlags] = useState<IntegrityFlag[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const fetchFlags = async (lvl: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = Cookies.get("token");
+      const res = await Api.get<IntegrityFlag[]>(
+        `${API_BASE_URL}/integrity-flags?level=${lvl}`,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+      setFlags(res || []);
+    } catch (err) {
+      setError((err as Error).message || "Failed to load integrity flags");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlags(level);
+  }, [level]);
+
+  const handleResolve = async (id: number) => {
+    try {
+      const token = Cookies.get("token");
+      const res = await Api.post<IntegrityFlag>(
+        `${API_BASE_URL}/integrity-flags/${id}/resolve`,
+        {},
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+      setFlags((prev) => prev.map((f) => (f.id === id ? res : f)));
+      toast({ title: "Flag resolved", description: `${res.title} marked as RESOLVED` });
+    } catch (err) {
+      toast({ title: "Error", description: (err as Error).message || "Failed to resolve flag", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="p-6 bg-government-50 min-h-screen">
       <motion.div
@@ -32,68 +70,56 @@ export const IntegrityFlags = () => {
         className="mb-6"
       >
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-government-800">System Integrity Flags</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">All <span className="ml-1 bg-government-200 px-2 py-1 rounded text-xs">2</span></Button>
-            <Button variant="outline" size="sm">High <span className="ml-1 bg-red-200 px-2 py-1 rounded text-xs">1</span></Button>
-            <Button variant="outline" size="sm">Medium <span className="ml-1 bg-yellow-200 px-2 py-1 rounded text-xs">0</span></Button>
-            <Button variant="outline" size="sm">Low <span className="ml-1 bg-orange-200 px-2 py-1 rounded text-xs">1</span></Button>
+          <h1 className="text-2xl font-bold text-government-800">Integrity Flags</h1>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-government-600">Filter level</div>
+            <Select value={level} onValueChange={(v) => setLevel(v as "HIGH" | "MEDIUM" | "LOW") }>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="HIGH">HIGH</SelectItem>
+                <SelectItem value="MEDIUM">MEDIUM</SelectItem>
+                <SelectItem value="LOW">LOW</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </motion.div>
 
-      <div className="space-y-4">
-        {integrityFlags.map((flag, index) => (
-          <motion.div
-            key={flag.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            className={`p-6 rounded-lg border ${flag.color} bg-white`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-current/10 flex items-center justify-center text-xl">
-                  {flag.type === "Volume Spike" ? (
-                    <AlertTriangle className="h-6 w-6 text-red-600" />
-                  ) : (
-                    <span className="text-orange-600">😟</span>
-                  )}
+      {loading ? (
+        <div>Loading flags...</div>
+      ) : error ? (
+        <div className="text-red-500">{error}</div>
+      ) : flags.length === 0 ? (
+        <div>No flags found for level {level}.</div>
+      ) : (
+        <div className="space-y-4">
+          {flags.map((f) => (
+            <div key={f.id} className="bg-white border rounded p-4 flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-3">
+                  <div className="text-lg font-semibold text-government-800">{f.title}</div>
+                  <Badge className={`text-xs ${f.status === "OPEN" ? "bg-red-500" : "bg-green-500"}`}>{f.status}</Badge>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-government-800">{flag.type}</h3>
-                    <Badge 
-                      className={`px-2 py-1 text-xs font-medium ${
-                        flag.severity === "High" 
-                          ? "bg-red-100 text-red-800 border-red-200" 
-                          : "bg-orange-100 text-orange-800 border-orange-200"
-                      }`}
-                    >
-                      {flag.severity}
-                    </Badge>
-                  </div>
-                  <p className="text-government-700">{flag.description}</p>
-                </div>
+                <div className="text-sm text-government-600 mt-1">{f.description}</div>
+                <div className="text-xs text-government-500 mt-2">Created: {format(new Date(f.createdAt), "PPP p")}</div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  Details
-                </Button>
-                <Button 
-                  size="sm"
-                  className="bg-status-approved hover:bg-green-600 text-white"
-                >
-                  Mark resolved
-                </Button>
-                <Button variant="outline" size="sm">
-                  View related
-                </Button>
+              <div className="flex flex-col items-end gap-2">
+                {f.status !== "RESOLVED" ? (
+                  <Button className="bg-status-approved text-white" onClick={() => handleResolve(f.id)}>
+                    Resolve
+                  </Button>
+                ) : (
+                  <div className="text-sm text-green-600">Resolved</div>
+                )}
               </div>
             </div>
-          </motion.div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
+
+export default IntegrityFlags;

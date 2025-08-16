@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Api } from "@/lib/api";
+import * as apiEndpoints from "@/lib/api-endpoints";
+import Cookies from "js-cookie";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,16 +15,94 @@ interface LoginFormProps {
   onLogin: (userData: { name: string; role: string }) => void;
 }
 
+
 export const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  const handleSignIn = () => {
-    onLogin({ name: "Rohan", role: "Admin" });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // Create account fields
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      type LoginResponse = {
+        accessToken?: string;
+        token?: string;
+        user?: { name: string; role: string };
+        fullName?: string;
+        name?: string;
+        role?: string;
+      };
+      const res = await Api.post<LoginResponse>(
+        apiEndpoints.API_AUTH_LOGIN,
+        { username, password }
+      );
+      // Accept either accessToken or token for compatibility
+      const token = res.accessToken || res.token;
+      if (token) {
+        Cookies.set("token", token, { expires: 7 });
+        console.log("Token saved:", token);
+      } else {
+        setError("No token received from server");
+        setLoading(false);
+        return;
+      }
+      // Try to extract user info if present, else pass minimal user
+      if (res.user && res.user.name && res.user.role) {
+        onLogin(res.user);
+      } else if (res.fullName || res.name || username) {
+        // Fallback: use available info
+        onLogin({ name: res.fullName || res.name || username, role: res.role || "User" });
+      } else {
+        setError("Login succeeded but user info missing");
+      }
+      console.log("Login response:", res);
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "Login failed";
+      setError(errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCreateAccount = () => {
-    onLogin({ name: "Rohan", role: "Admin" });
+  // Create account handler
+  const handleCreateAccount = async () => {
+    setCreateLoading(true);
+    setCreateError(null);
+    if (createPassword !== confirmPassword) {
+      setCreateError("Passwords do not match");
+      setCreateLoading(false);
+      return;
+    }
+    try {
+      const res = await Api.post<any>(
+        apiEndpoints.API_AUTH_REGISTER,
+        {
+          fullName,
+          username,
+          email,
+          password: createPassword,
+          role: "ADMIN"
+        }
+      );
+      // Optionally, auto-login after registration
+      onLogin({ name: res.fullName || res.username, role: res.role || "ADMIN" });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "Registration failed";
+      setCreateError(errorMsg);
+    } finally {
+      setCreateLoading(false);
+    }
   };
 
   return (
@@ -121,12 +202,14 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
             <TabsContent value="signin">
               <CardContent className="space-y-6 p-0">
                 <div className="space-y-2">
-                  <Label htmlFor="email-signin">Work email</Label>
+                  <Label htmlFor="username-signin">Username</Label>
                   <Input 
-                    id="email-signin" 
-                    type="email" 
-                    placeholder="name@sltourism.gov.lk"
+                    id="username-signin" 
+                    type="text" 
+                    placeholder="Enter your username"
                     className="h-12"
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
                   />
                 </div>
                 
@@ -138,6 +221,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                       type={showPassword ? "text" : "password"}
                       placeholder="At least 8 characters"
                       className="h-12 pr-12"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
                     />
                     <Button
                       type="button"
@@ -155,11 +240,13 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                   </div>
                 </div>
                 
+                {error && <div className="text-red-500 text-sm">{error}</div>}
                 <Button 
                   onClick={handleSignIn}
                   className="w-full h-12 bg-government-primary hover:bg-government-primary-light text-white font-medium"
+                  disabled={loading}
                 >
-                  Sign in
+                  {loading ? "Signing in..." : "Sign in"}
                 </Button>
               </CardContent>
             </TabsContent>
@@ -173,6 +260,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                       id="fullname" 
                       placeholder="Rohan Perera"
                       className="h-12"
+                      value={fullName}
+                      onChange={e => setFullName(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -181,6 +270,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                       id="username" 
                       placeholder="rohan"
                       className="h-12"
+                      value={username}
+                      onChange={e => setUsername(e.target.value)}
                     />
                   </div>
                 </div>
@@ -192,6 +283,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                     type="email" 
                     placeholder="name@sltourism.gov.lk"
                     className="h-12"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
                   />
                 </div>
                 
@@ -204,6 +297,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                         type={showPassword ? "text" : "password"}
                         placeholder="At least 8 characters"
                         className="h-12 pr-12"
+                        value={createPassword}
+                        onChange={e => setCreatePassword(e.target.value)}
                       />
                       <Button
                         type="button"
@@ -230,6 +325,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Repeat password"
                         className="h-12 pr-12"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
                       />
                       <Button
                         type="button"
@@ -255,13 +352,14 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                   </Label>
                 </div>
                 
+                {createError && <div className="text-red-500 text-sm">{createError}</div>}
                 <Button 
                   onClick={handleCreateAccount}
                   className="w-full h-12 bg-government-primary hover:bg-government-primary-light text-white font-medium"
+                  disabled={createLoading}
                 >
-                  Create account
+                  {createLoading ? "Creating..." : "Create account"}
                 </Button>
-                
                 <p className="text-sm text-government-500 text-center">
                   You'll be signed in automatically after creating your account
                 </p>

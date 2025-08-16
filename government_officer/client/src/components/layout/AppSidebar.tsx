@@ -25,14 +25,14 @@ import {
 
 const navigationItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Ready for Review", url: "/ready-for-review", icon: Clock },
+
   { title: "All Applications", url: "/applications", icon: Users },
   { title: "Integrity Flags", url: "/integrity-flags", icon: AlertTriangle },
   { title: "Reports", url: "/reports", icon: FileText },
   { title: "Notifications Log", url: "/notifications", icon: Bell },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ onLogout }: { onLogout: () => void }) {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -128,6 +128,7 @@ export function AppSidebar() {
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={onLogout}
           >
             <LogOut className="h-5 w-5" />
             {!collapsed && (
