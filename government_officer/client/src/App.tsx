@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+import Cookies from "js-cookie";
 interface User {
   name: string;
   role: string;
@@ -30,8 +31,10 @@ const App = () => {
   };
 
   const handleLogout = () => {
+    Cookies.remove("token");
     setUser(null);
   };
+
 
   if (!user) {
     return (
@@ -39,7 +42,11 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <LoginForm onLogin={handleLogin} />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/*" element={<LoginForm onLogin={handleLogin} />} />
+            </Routes>
+          </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
     );
@@ -51,7 +58,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <MainLayout userName={user.name}>
+          <MainLayout userName={user.name} onLogout={handleLogout}>
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />

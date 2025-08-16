@@ -6,11 +6,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
+
 interface HeaderProps {
   userName: string;
+  onLogout: () => void;
 }
 
-export const Header = ({ userName }: HeaderProps) => {
+export const Header = ({ userName, onLogout }: HeaderProps) => {
+
   const navigate = useNavigate();
   return (
     <header className="h-16 border-b border-government-200 bg-white px-6 flex items-center justify-between">
@@ -64,7 +67,7 @@ export const Header = ({ userName }: HeaderProps) => {
               Preferences
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-600">
+            <DropdownMenuItem className="cursor-pointer text-red-600" onClick={onLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </DropdownMenuItem>
@@ -73,4 +76,4 @@ export const Header = ({ userName }: HeaderProps) => {
       </div>
     </header>
   );
-};
+}
