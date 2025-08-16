@@ -198,6 +198,7 @@ const MyAppointments = () => {
               <QRCodeDisplay 
                 appointmentId={appointment.id} 
                 reference={getAppointmentReference(appointment)} 
+                qrcode={appointment.qrcode}
               />
             </div>
           )}

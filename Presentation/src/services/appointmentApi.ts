@@ -27,6 +27,7 @@ export interface Appointment {
   createdAt: string;
   updatedAt: string;
   documents?: DocumentInfo[];
+  qrcode?: string; // URL to the QR code image
   // Additional fields for UI display
   service?: {
     name: string;
