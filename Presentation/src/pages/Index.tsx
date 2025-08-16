@@ -45,7 +45,7 @@ const Index = () => {
                 <Shield className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-heading font-bold text-foreground">Government Services</h1>
+                <h1 className="text-lg font-heading font-bold text-foreground">User Portal</h1>
                 <p className="text-xs text-muted-foreground">Unified Portal</p>
               </div>
             </div>
@@ -78,7 +78,7 @@ const Index = () => {
               </Button>
             </Link>
             <Link to="/departments">
-              <Button size="lg" variant="outline" className="min-w-[200px] border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button size="lg" variant="outline" className="min-w-[200px] border-primary-foreground text-primary hover:bg-primary-foreground hover:text-primary">
                 Browse Services
               </Button>
             </Link>

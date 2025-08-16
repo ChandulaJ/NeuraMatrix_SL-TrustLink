@@ -78,7 +78,7 @@ export class AppointmentService {
       // Upload documents if provided (use original file names)
       if (files.length > 0) {
         logger.info(`Starting document upload for ${files.length} files`);
-        const fileNames = files.map((file) => file.originalname);
+        const fileNames = service.requirements || [];
         logger.info(`File names: ${JSON.stringify(fileNames)}`);
 
         try {

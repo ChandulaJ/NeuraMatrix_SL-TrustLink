@@ -55,7 +55,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 <Shield className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-heading font-bold text-foreground">Gov Services</h1>
+                <h1 className="text-lg font-heading font-bold text-foreground">User Services</h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">Unified Portal</p>
               </div>
             </div>

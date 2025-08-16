@@ -44,7 +44,7 @@ const SignIn = () => {
             </div>
           </div>
           <h1 className="text-3xl font-heading font-bold text-foreground">User Portal</h1>
-          <p className="text-muted-foreground mt-2">Access your citizen services</p>
+          <p className="text-muted-foreground mt-2">Access your user services</p>
         </div>
 
         <Card className="shadow-card border-0">

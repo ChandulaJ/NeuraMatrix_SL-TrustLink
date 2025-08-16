@@ -77,7 +77,7 @@ const SignUp = () => {
             </div>
           </div>
           <h1 className="text-3xl font-heading font-bold text-foreground">User Portal</h1>
-          <p className="text-muted-foreground mt-2">Create your citizen account</p>
+          <p className="text-muted-foreground mt-2">Create your user account</p>
         </div>
 
         <Card className="shadow-card border-0">

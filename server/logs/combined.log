@@ -344,3 +344,61 @@
 {"level":"info","message":"File names: [\"Black and Red Business Application Letter.jpg\",\"ChatGPT Image Aug 12, 2025, 08_00_38 PM.png\",\"Black and Red Business Application Letter.jpg\"]","timestamp":"2025-08-16 17:01:06"}
 {"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 17:01:06"}
 {"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 17:01:08"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 17:55:22"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 17:55:22"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 17:55:22"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 17:55:22"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 17:55:22"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 17:55:22"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 17:55:34"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"4\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:22.355Z\",\"reference\":\"APP-4-212722\",\"notes\":\"No\"}","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":4,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:22.355Z\",\"reference\":\"APP-4-212722\",\"notes\":\"No\"}","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Looking up service with ID: 4","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Service found: National Identity Card Issuance","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"File names: [\"Birth Certificate\",\"Proof of Residence\",\"Two Recent Photographs\"]","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 17:56:52"}
+{"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 17:56:54"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"1\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:23.096Z\",\"reference\":\"APP-1-124532\",\"notes\":\"i want to meet personally\"}","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Number of files uploaded: 3","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":1,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T05:00:23.096Z\",\"reference\":\"APP-1-124532\",\"notes\":\"i want to meet personally\"}","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Looking up service with ID: 1","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Service found: Tourist Visa Issuance","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Starting document upload for 3 files","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"File names: [\"Passport\",\"Passport-sized Photo\",\"Visa Application Form\"]","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"Successfully uploaded 3 documents for appointment.","timestamp":"2025-08-16 18:12:04"}
+{"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 18:12:09"}
+{"level":"info","message":"Seeding database...","timestamp":"2025-08-16 18:38:41"}
+{"level":"info","message":"Database seeded successfully","timestamp":"2025-08-16 18:38:41"}
+{"level":"info","message":"Starting notification service...","timestamp":"2025-08-16 18:38:41"}
+{"level":"info","message":"Notification service started successfully","timestamp":"2025-08-16 18:38:41"}
+{"level":"info","message":"Server started on http://localhost:3000","timestamp":"2025-08-16 18:38:41"}
+{"level":"info","message":"Health check: http://localhost:3000/health","timestamp":"2025-08-16 18:38:41"}
+{"level":"info","message":"WhatsApp client initialized","timestamp":"2025-08-16 18:38:53"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"1\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T10:30:59.226Z\",\"reference\":\"APP-1-937745\",\"notes\":\"kkkj\"}","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"Number of files uploaded: 0","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":1,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T10:30:59.226Z\",\"reference\":\"APP-1-937745\",\"notes\":\"kkkj\"}","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"Looking up service with ID: 1","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"Service found: Tourist Visa Issuance","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"No documents to upload","timestamp":"2025-08-16 18:42:17"}
+{"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 18:42:20"}
+{"level":"info","message":"Starting appointment creation...","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"Request body: {\"userId\":\"1\",\"serviceId\":\"5\",\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T08:30:23.420Z\",\"reference\":\"APP-5-253091\",\"notes\":\"vfgfgf\"}","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"Number of files uploaded: 0","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"Appointment data prepared: {\"userId\":1,\"serviceId\":5,\"type\":\"IN_PERSON\",\"status\":\"PENDING\",\"scheduledAt\":\"2025-08-16T08:30:23.420Z\",\"reference\":\"APP-5-253091\",\"notes\":\"vfgfgf\"}","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"Looking up user with ID: 1","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"User found: dinukpkcc@gmail.com","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"Looking up service with ID: 5","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"Service found: Birth Registration","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"No documents to upload","timestamp":"2025-08-16 18:47:33"}
+{"level":"info","message":"QR code sent to WhatsApp for user 1","timestamp":"2025-08-16 18:47:35"}
