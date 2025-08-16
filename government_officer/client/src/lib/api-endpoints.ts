@@ -8,28 +8,28 @@ export const API_AUTH_REGISTER = `${API_BASE_URL}/auth/register`;
 export const API_AUTH_LOGIN = `${API_BASE_URL}/auth/login`;
 
 // Application
-export const API_APPLICATION_LIST = `${API_BASE_URL}/application`;
-export const API_APPLICATION_DETAIL = (id: string) => `${API_BASE_URL}/application/${id}`;
-export const API_APPLICATION_ACCEPT_APPOINTMENT = (id: string) => `${API_BASE_URL}/application/${id}/appointment/accept`;
-export const API_APPLICATION_APPROVE = (id: string) => `${API_BASE_URL}/application/${id}/approve`;
-export const API_APPLICATION_REJECT = (id: string) => `${API_BASE_URL}/application/${id}/reject`;
-export const API_APPLICATION_AUDIT_REPORT = (id: string) => `${API_BASE_URL}/application/${id}/audit-report`;
+export const API_APPLICATION_LIST = `${API_BASE_URL}/applications`;
+export const API_APPLICATION_DETAIL = (id: string) => `${API_BASE_URL}/applications/${id}`;
+export const API_APPLICATION_ACCEPT_APPOINTMENT = (id: string) => `${API_BASE_URL}/applications/${id}/appointment/accept`;
+export const API_APPLICATION_APPROVE = (id: string) => `${API_BASE_URL}/applications/${id}/approve`;
+export const API_APPLICATION_REJECT = (id: string) => `${API_BASE_URL}/applications/${id}/reject`;
+export const API_APPLICATION_AUDIT_REPORT = (id: string) => `${API_BASE_URL}/applications/${id}/audit-report`;
 
 // Flag
 export const API_FLAG_LIST = `${API_BASE_URL}/flag`;
 export const API_FLAG_RESOLVE = (id: string) => `${API_BASE_URL}/flag/${id}/resolve`;
 
 // Notification
-export const API_NOTIFICATION_LIST = `${API_BASE_URL}/notification`;
-export const API_NOTIFICATION_READ = (id: string) => `${API_BASE_URL}/notification/${id}/read`;
+export const API_NOTIFICATION_LIST = `${API_BASE_URL}/notifications`;
+export const API_NOTIFICATION_READ = (id: string) => `${API_BASE_URL}/notifications/${id}/read`;
 
 // Report
 export const API_REPORT_SUMMARY = `${API_BASE_URL}/reports/summary`;
-export const API_REPORT_APPROVALS_VS_REJECTIONS = `${API_BASE_URL}/report/approvals-vs-rejections`;
-export const API_REPORT_AUDITOR_PERFORMANCE = `${API_BASE_URL}/report/auditor-performance`;
-export const API_REPORT_STATUS_BREAKDOWN = `${API_BASE_URL}/report/status-breakdown`;
+export const API_REPORT_APPROVALS_VS_REJECTIONS = `${API_BASE_URL}/reports/approvals-vs-rejections`;
+export const API_REPORT_AUDITOR_PERFORMANCE = `${API_BASE_URL}/reports/auditor-performance`;
+export const API_REPORT_STATUS_BREAKDOWN = `${API_BASE_URL}/reports/status-breakdown`;
 
 // Schedule
-export const API_SCHEDULE_MY = `${API_BASE_URL}/schedule/my`;
-export const API_SCHEDULE_CREATE = `${API_BASE_URL}/schedule`;
-export const API_SCHEDULE_DELETE = (id: string) => `${API_BASE_URL}/schedule/${id}`;
+export const API_SCHEDULE_MY = `${API_BASE_URL}/admin-schedule/my`;
+export const API_SCHEDULE_CREATE = `${API_BASE_URL}/admin-schedule`;
+export const API_SCHEDULE_DELETE = (id: string) => `${API_BASE_URL}/admin-schedule/${id}`;

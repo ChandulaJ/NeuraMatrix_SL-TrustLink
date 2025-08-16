@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { useNotifications } from "@/contexts/useNotifications";
 
 
 interface HeaderProps {
@@ -15,6 +16,8 @@ interface HeaderProps {
 export const Header = ({ userName, onLogout }: HeaderProps) => {
 
   const navigate = useNavigate();
+  const { unreadCount } = useNotifications();
+
   return (
     <header className="h-16 border-b border-government-200 bg-white px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -36,9 +39,11 @@ export const Header = ({ userName, onLogout }: HeaderProps) => {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" className="relative">
+        <Button variant="ghost" size="sm" className="relative" onClick={() => navigate('/notifications')}>
           <Bell className="h-5 w-5 text-government-600" />
-          <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs" title={`${unreadCount} unread`} />
+          )}
         </Button>
 
         <DropdownMenu>

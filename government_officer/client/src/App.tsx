@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NotificationProvider } from "@/contexts/notifications";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginForm } from "./components/auth/LoginForm";
 import { MainLayout } from "./components/layout/MainLayout";
@@ -57,21 +58,24 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <MainLayout userName={user.name} onLogout={handleLogout}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/applications" element={<Applications />} />
-              <Route path="/application/:id" element={<ApplicationDetail />} />
-              <Route path="/integrity-flags" element={<IntegrityFlags />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </MainLayout>
-        </BrowserRouter>
+        <NotificationProvider>
+          <BrowserRouter>
+            <MainLayout userName={user.name} onLogout={handleLogout}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/applications" element={<Applications />} />
+                <Route path="/application/:id" element={<ApplicationDetail />} />
+                <Route path="/application" element={<Navigate to="/applications" replace />} />
+                <Route path="/integrity-flags" element={<IntegrityFlags />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </MainLayout>
+          </BrowserRouter>
+        </NotificationProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

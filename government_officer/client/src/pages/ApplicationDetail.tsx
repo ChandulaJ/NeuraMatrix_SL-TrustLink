@@ -1,5 +1,5 @@
 import { AdminScheduleList } from "@/components/dashboard/AdminScheduleList";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Check, X, Calendar, Clock, ArrowLeft } from "lucide-react";
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 import { Api } from "@/lib/api";
 import Cookies from "js-cookie";
+import { API_APPLICATION_DETAIL, API_SCHEDULE_CREATE, API_APPLICATION_ACCEPT_APPOINTMENT, API_APPLICATION_APPROVE, API_APPLICATION_REJECT } from "@/lib/api-endpoints";
 
 export const ApplicationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -106,54 +107,55 @@ export const ApplicationDetail = () => {
 
   const [application, setApplication] = useState<UIApplication | null>(null);
 
-  useEffect(() => {
-    const fetchApplication = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = Cookies.get("token");
-        const res = await Api.get<ApiApplication>(
-          `http://localhost:4000/applications/${id}`,
-          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-        );
-        // Map server response to UI fields
-        setApplication({
-          id: res.id,
-          businessName: res.user?.fullName || res.user?.username || "-",
-          location: `${res.locationText || "-"} • ${res.region || "-"}`,
-          owner: res.user?.fullName || "-",
-          address: res.user?.address || "-",
-          phone: res.user?.phone || "-",
-          email: res.user?.email || "-",
-          submitted: res.createdAt ? new Date(res.createdAt).toLocaleString() : "-",
-          documents: (res.documents || []).map((doc) => ({ name: doc.name, url: doc.url })),
-          auditor: res.auditReport?.auditorName || "-",
-          auditDate: res.scheduledAt ? new Date(res.scheduledAt).toLocaleString() : "-",
-          result: res.auditReport?.result || "-",
-          checklist: {
-            fireSafety: res.auditReport?.checklist?.fireSafety || "-",
-            hygiene: res.auditReport?.checklist?.hygiene || "-",
-            emergencyExits: res.auditReport?.checklist?.emergencyExits || "-",
-          },
-          notes: res.notes || "-",
-          photoEvidence: res.auditReport?.photoEvidence || "-",
-          currentStatus: res.status ? res.status.charAt(0) + res.status.slice(1).toLowerCase().replace("_", " ") : "-",
-          licenseNumber: res.licenseNumber || "-"
-        });
-      } catch (err) {
-        setError((err as Error).message || "Failed to load application");
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (id) fetchApplication();
+  const fetchApplication = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = Cookies.get("token");
+  const res = await Api.get<ApiApplication>(
+  API_APPLICATION_DETAIL(String(id)),
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
+      // Map server response to UI fields
+      setApplication({
+        id: res.id,
+        businessName: res.user?.fullName || res.user?.username || "-",
+        location: `${res.locationText || "-"} • ${res.region || "-"}`,
+        owner: res.user?.fullName || "-",
+        address: res.user?.address || "-",
+        phone: res.user?.phone || "-",
+        email: res.user?.email || "-",
+        submitted: res.createdAt ? new Date(res.createdAt).toLocaleString() : "-",
+        documents: (res.documents || []).map((doc) => ({ name: doc.name, url: doc.url })),
+        auditor: res.auditReport?.auditorName || "-",
+        auditDate: res.scheduledAt ? new Date(res.scheduledAt).toLocaleString() : "-",
+        result: res.auditReport?.result || "-",
+        checklist: {
+          fireSafety: res.auditReport?.checklist?.fireSafety || "-",
+          hygiene: res.auditReport?.checklist?.hygiene || "-",
+          emergencyExits: res.auditReport?.checklist?.emergencyExits || "-",
+        },
+        notes: res.notes || "-",
+        photoEvidence: res.auditReport?.photoEvidence || "-",
+        currentStatus: res.status ? res.status.charAt(0) + res.status.slice(1).toLowerCase().replace("_", " ") : "-",
+        licenseNumber: res.licenseNumber || "-",
+      });
+    } catch (err) {
+      setError((err as Error).message || "Failed to load application");
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    if (id) fetchApplication();
+  }, [id, fetchApplication]);
   
   interface AppointmentAcceptResponse {
     appointmentId: number;
     accepted: boolean;
     overlapDetected: boolean;
-    overlaps: Array<any>;
+  overlaps: unknown[];
   }
 
   interface ApproveResponse {
@@ -169,7 +171,7 @@ export const ApplicationDetail = () => {
   const createAdminSchedule = async (start: string, end: string, title: string) => {
     const token = Cookies.get("token");
     return Api.post<{ id: number; adminId: number; start: string; end: string; title: string }>(
-      "http://localhost:4000/admin-schedule",
+      API_SCHEDULE_CREATE,
       { start, end, title },
       token ? { headers: { Authorization: `Bearer ${token}` } } : {}
     );
@@ -199,14 +201,14 @@ export const ApplicationDetail = () => {
 
       // 1. Accept appointment
       await Api.post<AppointmentAcceptResponse>(
-        `http://localhost:4000/applications/${id}/appointment/accept`,
+        API_APPLICATION_ACCEPT_APPOINTMENT(String(id)),
         { scheduledFor: isoString, force: true },
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
 
       // 2. Approve application
       const approveRes = await Api.post<ApproveResponse>(
-        `http://localhost:4000/applications/${id}/approve`,
+        API_APPLICATION_APPROVE(String(id)),
         { appointment: { scheduledFor: isoString, force: true } },
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
@@ -219,7 +221,8 @@ export const ApplicationDetail = () => {
       });
       setIsScheduleDialogOpen(false);
       setCreatingSchedule(false);
-      // Optionally update UI or refetch application
+  // Refresh application to reflect new status and license
+  await fetchApplication();
     } catch (err) {
       setCreatingSchedule(false);
       toast({
@@ -235,7 +238,7 @@ export const ApplicationDetail = () => {
     try {
       const token = Cookies.get("token");
       await Api.post<{ status: string }>(
-        `http://localhost:4000/applications/${id}/reject`,
+        API_APPLICATION_REJECT(String(id)),
         { reason: "Rejected by officer" },
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
@@ -245,12 +248,30 @@ export const ApplicationDetail = () => {
         variant: "destructive"
       });
       // Optionally update UI or refetch application
+  await fetchApplication();
     } catch (err) {
       toast({
         title: "Error",
         description: (err as Error).message || "Failed to reject application.",
         variant: "destructive"
       });
+    }
+  };
+
+  const getStatusBadgeClass = (status: string) => {
+    const s = status?.toLowerCase?.() || "";
+    switch (s) {
+      case "approved":
+        return "ml-2 bg-status-approved text-white";
+      case "rejected":
+        return "ml-2 bg-status-rejected text-white";
+      case "pending":
+        return "ml-2 bg-status-pending text-white";
+      case "audit passed":
+      case "audit-passed":
+        return "ml-2 bg-status-audit-passed text-white";
+      default:
+        return "ml-2 bg-government-300 text-government-800";
     }
   };
 
@@ -333,7 +354,9 @@ export const ApplicationDetail = () => {
                 <DialogContent className="sm:max-w-md">
                   <div className="mb-4">
                     <div className="font-semibold mb-2">Your Schedules</div>
-                    <AdminScheduleList />
+                    <div className="max-h-[50vh] overflow-auto pr-2">
+                      <AdminScheduleList />
+                    </div>
                   </div>
                   <DialogHeader>
                     <DialogTitle className="text-government-800">Schedule License Minting</DialogTitle>
@@ -543,7 +566,7 @@ export const ApplicationDetail = () => {
               <div className="flex items-center gap-4">
                 <div>
                   <label className="font-medium text-government-700">Current Status:</label>
-                  <Badge className="ml-2 bg-status-audit-passed text-white">
+                  <Badge className={getStatusBadgeClass(application.currentStatus)}>
                     {application.currentStatus}
                   </Badge>
                 </div>

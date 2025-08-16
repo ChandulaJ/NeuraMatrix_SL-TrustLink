@@ -56,7 +56,7 @@ export const Dashboard = () => {
       try {
         const token = Cookies.get("token");
         const res = await Api.get<ApplicationsApiResponse>(
-          "http://localhost:4000/applications",
+          apiEndpoints.API_APPLICATION_LIST,
           token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
         // Map API response to Application type

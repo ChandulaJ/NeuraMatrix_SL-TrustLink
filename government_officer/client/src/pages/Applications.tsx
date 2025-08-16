@@ -3,14 +3,23 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ApplicationsTable } from "@/components/dashboard/ApplicationsTable";
+import { ApplicationsTable, Application as AppType } from "@/components/dashboard/ApplicationsTable";
 import { Api } from "@/lib/api";
-import * as apiEndpoints from "@/lib/api-endpoints";
+import { API_APPLICATION_LIST } from "@/lib/api-endpoints";
 
 
+
+interface ApiApplication {
+  id: number;
+  user?: { fullName?: string; username?: string };
+  locationText?: string;
+  region?: string;
+  createdAt?: string;
+  status?: string;
+}
 
 export const Applications = () => {
-  const [applications, setApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<AppType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,22 +29,24 @@ export const Applications = () => {
       setError(null);
       try {
         const token = Cookies.get("token");
-        const res = await Api.get<{ items: any[] }>(
-          "http://localhost:4000/applications",
+        const res = await Api.get<ApiApplication[] | { items: ApiApplication[] }>(
+          API_APPLICATION_LIST,
           token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
+  const items: ApiApplication[] = Array.isArray(res) ? (res as ApiApplication[]) : ((res as { items?: ApiApplication[] }).items || []);
         // Map API response to table format
-        const mapped = res.items.map(app => ({
-          id: app.id,
+        const mapped = items.map((app) => ({
+          id: String(app.id),
           businessName: app.user?.fullName || app.user?.username || "-",
           location: `${app.locationText || "-"}\n${app.region || "-"}`,
           auditDate: app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "-",
           auditor: app.user?.fullName || "N/A",
-          status: (app.status || "pending").toLowerCase().replace("_", "-")
+          status: (app.status || "pending").toLowerCase().replace("_", "-"),
         }));
-        setApplications(mapped);
-      } catch (err: any) {
-        setError(err.message || "Failed to load applications");
+        setApplications(mapped as AppType[]);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message || "Failed to load applications");
       } finally {
         setLoading(false);
       }

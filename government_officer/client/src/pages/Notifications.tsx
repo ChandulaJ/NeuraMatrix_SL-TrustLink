@@ -1,25 +1,13 @@
 import { motion } from "framer-motion";
-
-const notifications = [
-  {
-    id: 1,
-    time: "8/8/2025, 6:55:39 PM",
-    type: "email",
-    recipient: "anusha@example.com",
-    subject: "Audit Passed",
-    message: "Awaiting final review."
-  },
-  {
-    id: 2,
-    time: "8/4/2025, 6:55:39 PM", 
-    type: "email",
-    recipient: "kasun@example.com",
-    subject: "Application Rejected",
-    message: "Reason: Missing fire extinguisher and blocked exit."
-  }
-];
+import { useNotifications } from "@/contexts/useNotifications";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 export const Notifications = () => {
+  const { notifications, markAsRead, refresh } = useNotifications();
+
+  const items = notifications || [];
+
   return (
     <div className="p-6 bg-government-50 min-h-screen">
       <motion.div
@@ -28,7 +16,12 @@ export const Notifications = () => {
         transition={{ duration: 0.4 }}
         className="mb-6"
       >
-        <h1 className="text-2xl font-bold text-government-800">Notifications Log</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-government-800">Notifications</h1>
+          <div>
+            <Button variant="outline" size="sm" onClick={() => refresh()}>Refresh</Button>
+          </div>
+        </div>
       </motion.div>
 
       <motion.div
@@ -41,37 +34,37 @@ export const Notifications = () => {
           <table className="w-full">
             <thead className="bg-government-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">
-                  Recipient
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">
-                  Subject
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">
-                  Message
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">Message</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-government-600 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-government-200">
-              {notifications.map((notification, index) => (
+              {items.length === 0 ? (
+                <tr>
+                  <td className="px-6 py-4 text-government-700" colSpan={5}>No notifications</td>
+                </tr>
+              ) : items.map((n, index) => (
                 <motion.tr
-                  key={notification.id}
+                  key={n.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="hover:bg-government-50 transition-colors duration-150"
+                  transition={{ duration: 0.25, delay: index * 0.05 }}
+                  className={`transition-colors duration-150 ${!n.read ? 'bg-government-50' : ''}`}
                 >
-                  <td className="px-6 py-4 text-government-900">{notification.time}</td>
-                  <td className="px-6 py-4 text-government-900">{notification.type}</td>
-                  <td className="px-6 py-4 text-government-900">{notification.recipient}</td>
-                  <td className="px-6 py-4 text-government-900">{notification.subject}</td>
-                  <td className="px-6 py-4 text-government-700">{notification.message}</td>
+                  <td className="px-6 py-4 text-government-900">{n.createdAt ? format(new Date(n.createdAt), 'PPP p') : '-'}</td>
+                  <td className="px-6 py-4 text-government-900">{n.type}</td>
+                  <td className="px-6 py-4 text-government-900">{n.title}</td>
+                  <td className="px-6 py-4 text-government-700">{n.body}</td>
+                  <td className="px-6 py-4">
+                    {!n.read ? (
+                      <Button size="sm" onClick={() => markAsRead(n.id)}>Mark read</Button>
+                    ) : (
+                      <div className="text-sm text-green-600">Read</div>
+                    )}
+                  </td>
                 </motion.tr>
               ))}
             </tbody>

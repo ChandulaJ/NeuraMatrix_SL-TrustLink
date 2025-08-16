@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Api } from "@/lib/api";
 import Cookies from "js-cookie";
+import { API_SCHEDULE_MY, API_SCHEDULE_DELETE } from "@/lib/api-endpoints";
 
 export interface AdminScheduleItem {
   id: number;
@@ -26,7 +27,7 @@ export const AdminScheduleList = ({ onDelete }: AdminScheduleListProps) => {
       try {
         const token = Cookies.get("token");
         const res = await Api.get<AdminScheduleItem[]>(
-          "http://localhost:4000/admin-schedule/my",
+          API_SCHEDULE_MY,
           token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
         setSchedules(res);
@@ -43,7 +44,7 @@ export const AdminScheduleList = ({ onDelete }: AdminScheduleListProps) => {
     try {
       const token = Cookies.get("token");
       await Api.delete<{ ok: boolean }>(
-        `http://localhost:4000/admin-schedule/${id}`,
+        API_SCHEDULE_DELETE(String(id)),
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
       setSchedules((prev) => prev.filter((item) => item.id !== id));
