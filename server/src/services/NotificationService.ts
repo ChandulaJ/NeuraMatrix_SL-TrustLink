@@ -99,7 +99,7 @@ export class NotificationService implements NotificationInterface {
         'send-24h-reminder',
         { evt: event, type: 'reminder' },
         {
-          delay: 10000,
+          delay: delay,
           jobId: reminderJobId,
           removeOnComplete: 100,
           removeOnFail: 100,
