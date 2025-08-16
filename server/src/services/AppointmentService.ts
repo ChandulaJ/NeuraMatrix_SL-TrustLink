@@ -26,10 +26,15 @@ export class AppointmentService {
 
   async createAppointment(req: Request): Promise<Appointment> {
     try {
+      logger.info('Starting appointment creation...');
+      logger.info(`Request body: ${JSON.stringify(req.body)}`);
+      
       // Extract uploaded files safely
       const files = Array.isArray(req.files)
         ? (req.files as Express.Multer.File[])
         : [];
+      
+      logger.info(`Number of files uploaded: ${files.length}`);
 
       // Prepare appointment data with type conversions
       const appointmentData: Omit<Appointment, 'createdAt' | 'updatedAt'> = {
@@ -38,36 +43,55 @@ export class AppointmentService {
         serviceId: Number(req.body.serviceId),
         scheduledAt: new Date(req.body.scheduledAt),
         notes: req.body.notes || undefined,
+        reference: req.body.reference,
       };
+      
+      logger.info(`Appointment data prepared: ${JSON.stringify(appointmentData)}`);
 
       //get user email from userId
       const userId = appointmentData.userId;
-      const user = await this.userInterface.getUserById(userId);
-      if (!user) {
+      logger.info(`Looking up user with ID: ${userId}`);
+      const userResponse = await this.userInterface.getUserById(userId);
+      if (!userResponse.success || !userResponse.data) {
+        logger.error(`User not found for ID: ${userId}`);
         throw new Error('User not found');
       }
-      const userEmail = user.data.email;
-      const userPhoneNumber = user.data.phoneNumber;
+      const userEmail = userResponse.data.email;
+      const userPhoneNumber = userResponse.data.phoneNumber;
+      logger.info(`User found: ${userEmail}`);
 
       //get the service booked
       const serviceId = appointmentData.serviceId;
+      logger.info(`Looking up service with ID: ${serviceId}`);
       const service = await this.serviceInterface.getServiceById(serviceId);
       if (!service) {
+        logger.error(`Service not found for ID: ${serviceId}`);
         throw new Error('Service not found');
       }
       const serviceName = service.name;
+      logger.info(`Service found: ${serviceName}`);
 
       let documents: DocumentInfo[] = [];
 
       // Upload documents if provided (use original file names)
       if (files.length > 0) {
+        logger.info(`Starting document upload for ${files.length} files`);
         const fileNames = files.map((file) => file.originalname);
-        documents = await this.documentService.uploadMultipleDocuments(
-          files,
-          fileNames,
-          appointmentData.userId
-        );
-        logger.info(`Uploaded ${documents.length} documents for appointment.`);
+        logger.info(`File names: ${JSON.stringify(fileNames)}`);
+        
+        try {
+          documents = await this.documentService.uploadMultipleDocuments(
+            files,
+            fileNames,
+            appointmentData.userId
+          );
+          logger.info(`Successfully uploaded ${documents.length} documents for appointment.`);
+        } catch (uploadError) {
+          logger.error(`Document upload failed: ${(uploadError as Error).message}`);
+          throw new Error(`Document upload failed: ${(uploadError as Error).message}`);
+        }
+      } else {
+        logger.info('No documents to upload');
       }
 
       // Create appointment

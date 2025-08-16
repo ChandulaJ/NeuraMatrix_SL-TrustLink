@@ -59,6 +59,16 @@ export class DocumentService {
     userId: number
   ): Promise<DocumentInfo> {
     try {
+      // Check if file exists
+      if (!file || !file.path) {
+        throw new Error('File not found or invalid');
+      }
+
+      // Check if file exists on disk
+      if (!fs.existsSync(file.path)) {
+        throw new Error(`File not found at path: ${file.path}`);
+      }
+
       const fileExtension = path.extname(file.originalname);
       const objectName = `user_${userId}/${documentName}_${Date.now()}${fileExtension}`;
 

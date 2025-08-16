@@ -7,6 +7,13 @@ export interface CreateAppointmentRequest {
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   scheduledAt: string;
   notes?: string;
+  reference: string;
+  documents?: File[];
+}
+
+export interface DocumentInfo {
+  url: string;
+  name: string;
 }
 
 export interface Appointment {
@@ -19,6 +26,7 @@ export interface Appointment {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+  documents?: DocumentInfo[];
   // Additional fields for UI display
   service?: {
     name: string;
@@ -29,14 +37,31 @@ export interface Appointment {
 }
 
 export const appointmentApi = {
-  // Create appointment
+  // Create appointment with file uploads
   create: async (appointment: CreateAppointmentRequest): Promise<Appointment> => {
+    const formData = new FormData();
+    
+    // Add appointment data
+    formData.append('userId', appointment.userId.toString());
+    formData.append('serviceId', appointment.serviceId.toString());
+    formData.append('type', appointment.type);
+    formData.append('status', appointment.status);
+    formData.append('scheduledAt', appointment.scheduledAt);
+    formData.append('reference', appointment.reference);
+    if (appointment.notes) {
+      formData.append('notes', appointment.notes);
+    }
+    
+    // Add documents if provided
+    if (appointment.documents && appointment.documents.length > 0) {
+      appointment.documents.forEach((file) => {
+        formData.append('documents', file);
+      });
+    }
+    
     const response = await fetch(`${API_BASE_URL}/appointments`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(appointment),
+      body: formData, // Don't set Content-Type header, let browser set it with boundary
     });
     
     if (!response.ok) {

@@ -9,11 +9,26 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Clock, Calendar as CalendarIcon, MapPin, CheckCircle, QrCode } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Clock, Calendar as CalendarIcon, MapPin, CheckCircle, QrCode, Upload, X, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { appointmentApi } from "@/services/appointmentApi";
 import { getServiceById } from "@/services/servicesApi";
 import { authApi } from "@/services/authApi";
+
+interface Service {
+  id: number;
+  name: string;
+  description?: string;
+  department: {
+    name: string;
+    location: string;
+  };
+  duration: number;
+  price: number;
+  requirements?: string[];
+  location?: string;
+}
 
 const AppointmentBooking = () => {
   const { serviceId } = useParams();
@@ -23,11 +38,13 @@ const AppointmentBooking = () => {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("IN_PERSON");
   const [notes, setNotes] = useState<string>("");
+
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [bookingReference, setBookingReference] = useState<string>("");
-  const [service, setService] = useState<any>(null);
+  const [service, setService] = useState<Service | null>(null);
+  const [documentMap, setDocumentMap] = useState<Record<string, File | null>>({});
 
   useEffect(() => {
     const fetchService = async () => {
@@ -60,6 +77,24 @@ const AppointmentBooking = () => {
     setSelectedTime(time);
   };
 
+  const handleDocumentChange = (requirement: string, file: File | null) => {
+    setDocumentMap(prev => ({
+      ...prev,
+      [requirement]: file
+    }));
+  };
+
+  const removeDocument = (requirement: string) => {
+    setDocumentMap(prev => ({
+      ...prev,
+      [requirement]: null
+    }));
+  };
+
+  const getSelectedDocuments = (): File[] => {
+    return Object.values(documentMap).filter((file): file is File => file !== null);
+  };
+
   const handleBookingConfirmation = () => {
     if (!selectedDate || !selectedTime) {
       toast({
@@ -72,7 +107,7 @@ const AppointmentBooking = () => {
     setShowConfirmation(true);
   };
 
-  const confirmBooking = async (service) => {
+  const confirmBooking = async (service: Service) => {
     if (!selectedDate || !selectedTime || !serviceId) return;
     
     setIsLoading(true);
@@ -102,7 +137,8 @@ const AppointmentBooking = () => {
         status: 'PENDING' as const,
         scheduledAt: scheduledAt.toISOString(),
         notes: notes || undefined,
-        reference: referenceNumber
+        reference: referenceNumber,
+        documents: getSelectedDocuments().length > 0 ? getSelectedDocuments() : undefined
       };
       const appointment = await appointmentApi.create(appointmentData);
       setBookingReference(referenceNumber);
@@ -186,13 +222,28 @@ const AppointmentBooking = () => {
                   <Clock className="w-4 h-4" />
                   <span>Duration: {service.duration}</span>
                 </div>
+                                 {getSelectedDocuments().length > 0 && (
+                   <div className="flex items-start gap-2 text-muted-foreground">
+                     <FileText className="w-4 h-4 mt-0.5" />
+                     <div>
+                       <span className="font-medium">Documents uploaded:</span>
+                       <ul className="ml-4 mt-1 space-y-1 text-sm">
+                         {getSelectedDocuments().map((doc, index) => (
+                           <li key={index}>{doc.name}</li>
+                         ))}
+                       </ul>
+                     </div>
+                   </div>
+                 )}
               </div>
 
               <div className="border-t pt-4">
                 <h4 className="font-medium mb-2">Important Reminders:</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• Arrive 15 minutes before your appointment time</li>
-                  <li>• Bring all required documents</li>
+                  {getSelectedDocuments().length > 0 && (
+                    <li>• Documents have been uploaded and will be available to staff</li>
+                  )}
                   <li>• Show this confirmation at the reception</li>
                   <li>• Payment can be made at the counter</li>
                 </ul>
@@ -357,6 +408,56 @@ const AppointmentBooking = () => {
                     />
                   </div>
                   
+                  {service.requirements && service.requirements.length > 0 && (
+                    <div>
+                      <Label>Required Documents</Label>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Please upload the required documents for your appointment
+                      </p>
+                      <div className="space-y-3">
+                        {service.requirements.map((requirement: string, index: number) => (
+                          <div key={index} className="flex items-center gap-3">
+                            <div className="flex-1">
+                              <Input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0] || null;
+                                  handleDocumentChange(requirement, file);
+                                }}
+                                className="hidden"
+                                id={`document-${index}`}
+                              />
+                              <Label
+                                htmlFor={`document-${index}`}
+                                className="flex items-center gap-2 cursor-pointer border-2 border-dashed border-muted-foreground/25 rounded-lg p-3 hover:border-primary/50 transition-colors"
+                              >
+                                <Upload className="w-4 h-4" />
+                                <span className="text-sm">
+                                  {documentMap[requirement]?.name || `Upload ${requirement}`}
+                                </span>
+                              </Label>
+                            </div>
+                            {documentMap[requirement] && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeDocument(requirement)}
+                                className="shrink-0"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Accepted formats: PDF, JPG, JPEG, PNG (Max 10MB each)
+                      </p>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">Service Fee</span>
                     <span className="text-lg font-semibold text-primary">{service.price}</span>
@@ -386,6 +487,19 @@ const AppointmentBooking = () => {
                       <div><strong>Location:</strong> {selectedType === 'IN_PERSON' ? service.location : 'Online Meeting Link'}</div>
                       <div><strong>Fee:</strong> {service.price}</div>
                       {notes && <div><strong>Notes:</strong> {notes}</div>}
+                                             {getSelectedDocuments().length > 0 && (
+                         <div>
+                           <strong>Documents:</strong>
+                           <ul className="ml-4 mt-1 space-y-1">
+                             {getSelectedDocuments().map((doc, index) => (
+                               <li key={index} className="flex items-center gap-2 text-sm">
+                                 <FileText className="w-3 h-3" />
+                                 {doc.name}
+                               </li>
+                             ))}
+                           </ul>
+                         </div>
+                       )}
                     </div>
                     <div className="flex gap-3">
                       <Button variant="outline" className="flex-1" onClick={() => setShowConfirmation(false)}>
