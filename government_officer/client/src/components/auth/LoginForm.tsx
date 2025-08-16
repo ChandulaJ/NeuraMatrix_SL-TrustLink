@@ -15,14 +15,21 @@ interface LoginFormProps {
   onLogin: (userData: { name: string; role: string }) => void;
 }
 
-export const LoginForm = ({ onLogin }: LoginFormProps) => {
 
+export const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Create account fields
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -68,10 +75,34 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
     }
   };
 
-  // For create account, you can implement similar logic as above
+  // Create account handler
   const handleCreateAccount = async () => {
-    // ...implement registration logic if needed
-    onLogin({ name: "Rohan", role: "Admin" });
+    setCreateLoading(true);
+    setCreateError(null);
+    if (createPassword !== confirmPassword) {
+      setCreateError("Passwords do not match");
+      setCreateLoading(false);
+      return;
+    }
+    try {
+      const res = await Api.post<any>(
+        apiEndpoints.API_AUTH_REGISTER,
+        {
+          fullName,
+          username,
+          email,
+          password: createPassword,
+          role: "ADMIN"
+        }
+      );
+      // Optionally, auto-login after registration
+      onLogin({ name: res.fullName || res.username, role: res.role || "ADMIN" });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "Registration failed";
+      setCreateError(errorMsg);
+    } finally {
+      setCreateLoading(false);
+    }
   };
 
   return (
@@ -229,6 +260,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                       id="fullname" 
                       placeholder="Rohan Perera"
                       className="h-12"
+                      value={fullName}
+                      onChange={e => setFullName(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -237,6 +270,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                       id="username" 
                       placeholder="rohan"
                       className="h-12"
+                      value={username}
+                      onChange={e => setUsername(e.target.value)}
                     />
                   </div>
                 </div>
@@ -248,6 +283,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                     type="email" 
                     placeholder="name@sltourism.gov.lk"
                     className="h-12"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
                   />
                 </div>
                 
@@ -260,6 +297,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                         type={showPassword ? "text" : "password"}
                         placeholder="At least 8 characters"
                         className="h-12 pr-12"
+                        value={createPassword}
+                        onChange={e => setCreatePassword(e.target.value)}
                       />
                       <Button
                         type="button"
@@ -286,6 +325,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Repeat password"
                         className="h-12 pr-12"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
                       />
                       <Button
                         type="button"
@@ -311,13 +352,14 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                   </Label>
                 </div>
                 
+                {createError && <div className="text-red-500 text-sm">{createError}</div>}
                 <Button 
                   onClick={handleCreateAccount}
                   className="w-full h-12 bg-government-primary hover:bg-government-primary-light text-white font-medium"
+                  disabled={createLoading}
                 >
-                  Create account
+                  {createLoading ? "Creating..." : "Create account"}
                 </Button>
-                
                 <p className="text-sm text-government-500 text-center">
                   You'll be signed in automatically after creating your account
                 </p>
